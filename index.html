@@ -98,9 +98,9 @@
   .day .n{color:var(--dim);font-size:10.5px;line-height:1}
   .day .s{font-weight:800;font-size:13px;line-height:1}
   /* mando group whose session falls on this day — grey label by default,
-     amber on the two days of the session that is running right now */
+     amber on the days belonging to the group you picked */
   .day .m{font-size:8.5px;font-weight:700;line-height:1;color:var(--faint);letter-spacing:.2px}
-  .day .m.active{color:#f0c063;background:#3a2f12;border-radius:3px;padding:1.5px 3.5px}
+  .day .m.mine{color:#f0c063;background:#3a2f12;border-radius:3px;padding:1.5px 3.5px}
   .day.a .s{color:var(--a)} .day.b .s{color:var(--b)} .day.c .s{color:var(--c)}
   .day.today{outline:2px solid var(--txt);outline-offset:-2px}
   .day.today .n{color:var(--txt);font-weight:700}
@@ -204,7 +204,7 @@
         <span><i style="background:var(--a)"></i>A</span>
         <span><i style="background:var(--b)"></i>B</span>
         <span><i style="background:var(--c)"></i>C</span>
-        <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = on now</span>
+        <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = yours</span>
       </div>
     </div>
   </div>
@@ -267,24 +267,19 @@ function drawCal(){
   const len   = new Date(calY, calM + 1, 0).getDate();
   let html = '';
   for (let i = 0; i < first; i++) html += '<div class="day pad"></div>';
-  /* The session running right now — both of its days go amber. It rolls
-     forward on its own: when B5's two days are done, C5 lights up next. */
-  let live = [];
-  if (typeof mandoOnDate === 'function'){
-    const t = Date.UTC(TY, TM, TD);
-    const m = mandoOnDate(t);
-    if (m) live = m.dayOf === 1 ? [t, t + 86400000] : [t - 86400000, t];
-  }
+  const myGroup = localStorage.getItem('pfd-mando-group');
 
   for (let d = 1; d <= len; d++){
     const s = shiftFor(calY, calM, d);
     const isToday = (d === TD && calM === TM && calY === TY);
-    // small tag: which group has mando that day
+    // small tag: which group has mando that day; amber when it's yours
     let tag = '';
     if (typeof mandoOnDate === 'function'){
-      const ms = Date.UTC(calY, calM, d);
-      const mg = mandoOnDate(ms);
-      if (mg) tag = `<span class="m${live.includes(ms) ? ' active' : ''}">${mg.shift}${mg.group}</span>`;
+      const mg = mandoOnDate(Date.UTC(calY, calM, d));
+      if (mg){
+        const id = mg.shift + mg.group;
+        tag = `<span class="m${id === myGroup ? ' mine' : ''}">${id}</span>`;
+      }
     }
     html += `<div class="day ${s.letter.toLowerCase()}${isToday ? ' today' : ''}">
                <span class="n">${d}</span><span class="s">${s.letter}</span>${tag}
