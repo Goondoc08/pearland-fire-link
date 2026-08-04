@@ -25,6 +25,7 @@ const LAST_UPDATED = "2026-08-04";   // bump when you do a review pass
 const LINKS = [
   {
     category: "Response & Patient Care",
+    accent: "224,54,44",
     icon: "siren",
     items: [
       {
@@ -46,9 +47,15 @@ const LINKS = [
         pinned: true
       },
       {
+        // NOTE: "pulsara://" is a guess — unlike Handtevy, Pulsara's URL
+        // scheme isn't publicly documented. The fallback means a wrong guess
+        // still lands on the web login, but if an iPhone throws an "address
+        // is invalid" alert, just delete the scheme line below.
         name: "Pulsara",
         desc: "Patient communication / alerts",
         url: "https://us-app.pulsara.com/user/login",
+        scheme: "pulsara://",
+        app: true,
         pinned: true
       },
       {
@@ -72,12 +79,13 @@ const LINKS = [
         name: "FEMA ICS Forms",
         desc: "Downloadable ICS forms 201–215A",
         url: "https://training.fema.gov/emiweb/is/icsresource/icsforms/"
-      },
+      }
     ]
   },
 
   {
     category: "Forms & Checklists",
+    accent: "128,122,222",
     icon: "clipboard",
     items: [
       {
@@ -115,6 +123,7 @@ const LINKS = [
 
   {
     category: "Maps",
+    accent: "45,168,178",
     icon: "map",
     items: [
       {
@@ -132,6 +141,7 @@ const LINKS = [
 
   {
     category: "HR & Payroll",
+    accent: "47,127,224",
     icon: "badge",
     items: [
       {
@@ -162,6 +172,7 @@ const LINKS = [
 
   {
     category: "Benefits & Retirement",
+    accent: "58,168,95",
     icon: "shield",
     items: [
       {
@@ -189,6 +200,7 @@ const LINKS = [
 
   {
     category: "Union & Certification",
+    accent: "214,140,45",
     icon: "flag",
     items: [
       {
@@ -216,6 +228,7 @@ const LINKS = [
 
   {
     category: "Wellness & Support",
+    accent: "214,94,124",
     icon: "heart",
     items: [
       {
