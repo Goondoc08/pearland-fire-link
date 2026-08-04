@@ -1,22 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="112" fill="#0f1216"/>
 
-  <!-- Flame sits behind as a watermark: large, filled, low contrast so the
-       wordmark stays readable at 48px. -->
-  <g transform="translate(256 262) scale(1.02) translate(-256 -230)">
+  <!-- Flame reads as a real element behind the wordmark, not a ghost. -->
+  <g transform="translate(256 206) translate(-256 -230)">
     <path d="M256 96s96 86 96 172a96 96 0 0 1-192 0c0-29 11-54 25-73 10 21 25 34 42 34 0-50 17-96 29-133z"
-          fill="#e0362c" fill-opacity="0.20"
-          stroke="#e0362c" stroke-opacity="0.55" stroke-width="16" stroke-linejoin="round"/>
+          fill="#e0362c" fill-opacity="0.22" stroke="#e0362c" stroke-opacity="0.9"
+          stroke-width="20" stroke-linejoin="round"/>
   </g>
 
-  <!-- PFD in front. Skew is applied about the text's own anchor so the letters
-       lean without drifting off centre; paint-order puts the white stroke
-       behind the red fill so the letterforms stay crisp. -->
-  <g transform="translate(256 316) skewX(-8)">
+  <!-- PFD. Skew is applied about the text's own anchor so the letters lean
+       without drifting off centre; paint-order puts the white stroke behind
+       the red fill so the letterforms stay crisp. -->
+  <g transform="translate(256 332) skewX(-8)">
     <text x="0" y="0" text-anchor="middle"
           font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
-          font-weight="900" font-size="176" letter-spacing="-13"
-          fill="#e0362c" stroke="#ffffff" stroke-width="14"
+          font-weight="900" font-size="128" letter-spacing="-10"
+          fill="#e0362c" stroke="#ffffff" stroke-width="11"
           paint-order="stroke" stroke-linejoin="round">PFD</text>
+  </g>
+
+  <!-- Hose coupling: two lines meeting at a collar, split by the joint.
+       Deliberately few, fat shapes — the fussy twin lugs of a real coupling
+       fill in when the icon is rasterised small, so one bold joint line
+       stands in for them. -->
+  <g fill="none" stroke="#ffffff" stroke-opacity="0.93" stroke-linecap="round">
+    <path d="M154 390h58M300 390h58" stroke-width="14"/>
+    <rect x="212" y="364" width="88" height="52" rx="13" stroke-width="12"/>
+    <path d="M256 364v52" stroke-width="10" stroke-linecap="butt"/>
   </g>
 </svg>
