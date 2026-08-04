@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1216">
+<title>PPE Inspection &amp; Advanced Cleaning Flow Chart</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --blue:#4a7ebb; --blue-bd:#a9c3de;
+    --green:#4f8a5b;
+    --red:#c9564e;  --red-bd:#e8b4ae;
+    --orange:#dd7159;
+    --indigo:#5c5f9e; --indigo-bd:#b9bbdd;
+    --ink:#22303c; --dim:#5a6b7a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0; background:#0f1216;
+    font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  .bar{
+    position:sticky; top:0; z-index:5; background:#0f1216;
+    border-bottom:1px solid #2a323c;
+    padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .bar a{color:#93a1b1;text-decoration:none;font-size:14px}
+  .bar .pr{margin-left:auto;background:#1e242c;border:1px solid #2a323c;color:#e8edf3;
+           border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+
+  .sheet{
+    background:#fff; color:var(--ink);
+    max-width:1040px; margin:14px auto; padding:22px 20px 18px; border-radius:10px;
+  }
+  h1{text-align:center;font-size:23px;font-weight:800;margin:0 0 6px;
+     color:#1d2b36;text-transform:uppercase;letter-spacing:.2px}
+  .rule{height:3px;background:var(--red);border-radius:2px;margin:0 0 22px}
+
+  /* 5 tracks: box | gutter | box | gutter | box */
+  .flow{
+    display:grid;
+    grid-template-columns:1fr 62px 1.25fr 62px 1fr;
+    align-items:stretch; row-gap:0; column-gap:0;
+  }
+
+  .box{border-radius:9px;overflow:hidden;border:1.5px solid var(--blue-bd);background:#fff}
+  .box > .hd{background:var(--blue);color:#fff;font-weight:700;font-size:13px;
+             letter-spacing:.6px;text-transform:uppercase;text-align:center;padding:6px 8px}
+  .box > .bd{padding:10px 12px}
+  .box.rose{border-color:var(--red-bd)} .box.rose > .hd{background:var(--red)}
+  .box.ind{border-color:var(--indigo-bd)} .box.ind > .hd{background:var(--indigo)}
+
+  ul{margin:0;padding-left:19px}
+  li{margin:5px 0;font-size:14px;font-weight:600;color:#243440}
+  .ps{font-weight:400;color:var(--dim)}
+  .note{display:block;font-weight:400;font-style:italic;font-size:12px;color:var(--dim);margin-top:2px}
+
+  ol{margin:0;padding:0;list-style:none;counter-reset:s}
+  ol li{counter-increment:s;display:flex;gap:9px;align-items:flex-start;
+        padding:7px 2px;border-bottom:1px solid #e6ebf0;margin:0}
+  ol li:last-child{border-bottom:0}
+  ol li::before{content:counter(s) ".";font-weight:800;color:var(--indigo);flex:0 0 auto;min-width:15px}
+  ol li a{color:var(--indigo);font-weight:800}
+
+  .pill{border-radius:9px;color:#fff;text-align:center;padding:12px 10px;
+        font-weight:700;font-size:14px;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;gap:6px;min-height:78px}
+  .pill.b{background:var(--blue)} .pill.g{background:var(--green)}
+  .pill svg{width:26px;height:26px}
+
+  .dia{background:var(--red);color:#fff;text-align:center;font-weight:800;
+       font-size:12.5px;letter-spacing:.4px;text-transform:uppercase;
+       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+       aspect-ratio:1/.84;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);
+       padding:0 12%;margin:0 auto;width:100%;max-width:236px}
+  .dia.or{background:var(--orange)}
+  .dia svg{width:22px;height:22px}
+
+  /* vertical connector */
+  .v{display:flex;align-items:center;justify-content:center;position:relative;min-height:36px}
+  .v::after{content:"";width:2px;height:100%;background:var(--ink)}
+  .v::before{content:"";position:absolute;bottom:-1px;width:0;height:0;
+             border-left:6px solid transparent;border-right:6px solid transparent;
+             border-top:9px solid var(--ink)}
+
+  /* horizontal connector with a NO / YES label above it */
+  .h{display:flex;align-items:center;justify-content:center;position:relative;padding:0 2px}
+  .h .ln{flex:1;height:2px;background:var(--ink)}
+  .h .tip{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent}
+  .h.r .tip{border-left:9px solid var(--ink)}
+  .h.l .tip{border-right:9px solid var(--ink);order:-1}
+  .h .lbl{position:absolute;top:50%;left:50%;transform:translate(-50%,-140%);
+          font-size:12px;font-weight:800;color:var(--ink);background:#fff;padding:0 4px}
+
+  .foot{margin-top:20px;border:1.5px solid #cdd6de;border-radius:9px;padding:11px 14px;
+        display:flex;align-items:center;gap:13px}
+  .foot svg{width:34px;height:34px;flex:0 0 auto;color:var(--blue)}
+  .foot p{margin:0;font-size:13.5px;font-weight:700;text-align:center;flex:1;color:#243440}
+  .foot .sr{display:block;color:var(--blue);font-style:italic;margin-top:3px}
+
+  .src{max-width:1040px;margin:0 auto 30px;padding:0 16px;color:#5d6b7a;font-size:11.5px;text-align:center}
+
+  /* ---------- narrow: single column, same logic ---------- */
+  @media (max-width:780px){
+    .sheet{margin:10px;padding:16px 13px 14px}
+    h1{font-size:17px}
+    .flow{grid-template-columns:1fr}
+    .flow > *{grid-column:1 !important;grid-row:auto !important}
+    .dia{max-width:200px;font-size:11.5px;margin:2px auto}
+    .h{min-height:30px}
+    .h .ln,.h .tip{display:none}
+    .h .lbl{position:static;transform:none;padding:3px 12px;border:1.5px solid var(--ink);
+            border-radius:20px;background:#fff}
+  }
+
+  @media print{
+    body{background:#fff} .bar,.src{display:none}
+    .sheet{margin:0;max-width:none;border-radius:0;padding:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <a href="index.html">‹ Back</a>
+  <button class="pr" onclick="window.print()">Print</button>
+</div>
+
+<div class="sheet">
+  <h1>PPE Inspection &amp; Advanced Cleaning Flow Chart</h1>
+  <div class="rule"></div>
+
+  <div class="flow">
+
+    <!-- row 1 -->
+    <div class="pill b" style="grid-column:1;grid-row:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      START OF<br>THE TOUR<br>0600
+    </div>
+    <div class="h r" style="grid-column:2;grid-row:1"><span class="ln"></span><span class="tip"></span></div>
+    <div class="box" style="grid-column:3/6;grid-row:1">
+      <div class="hd">Daily Start of Tour</div>
+      <div class="bd"><ul>
+        <li>PPE Routine Inspection <span class="ps">(PSTrax)</span></li>
+        <li>SCBA Check <span class="ps">(PSTrax)</span>
+          <span class="note">(RIT PAK and spare bottle checks completed in the SCBA Check)</span></li>
+      </ul></div>
+    </div>
+
+    <!-- row 2 -->
+    <div class="v" style="grid-column:3;grid-row:2"></div>
+
+    <!-- row 3 : diamond first in the DOM so the single-column phone layout reads
+         question -> answer. Desktop placement is explicit, so order here is free. -->
+    <div class="dia" style="grid-column:3;grid-row:3">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 9a5 5 0 0 1-10 0c0-1.5.6-2.8 1.3-3.8.5 1.1 1.3 1.8 2.2 1.8 0-2.6.9-5 1.5-7z"/></svg>
+      Did you<br>make a fire?
+    </div>
+    <div class="h l" style="grid-column:2;grid-row:3"><span class="ln"></span><span class="tip"></span><span class="lbl">NO</span></div>
+    <div class="pill g" style="grid-column:1;grid-row:3;align-self:center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+      Continue<br>Operations
+    </div>
+    <div class="h r" style="grid-column:4;grid-row:3"><span class="ln"></span><span class="tip"></span><span class="lbl">YES</span></div>
+    <div class="box rose" style="grid-column:5;grid-row:3;align-self:center">
+      <div class="hd">Onscene – Documentation</div>
+      <div class="bd"><ul>
+        <li>PPE Preliminary Exposure Reduction <span class="ps">(PSTrax)</span></li>
+        <li>SCBA Check <span class="ps">(PSTrax)</span></li>
+      </ul></div>
+    </div>
+
+    <!-- row 4 -->
+    <div class="v" style="grid-column:1;grid-row:4"></div>
+    <div class="v" style="grid-column:5;grid-row:4"></div>
+
+    <!-- row 5 : back-at-station spans rows 5-7 -->
+    <div class="box" style="grid-column:1;grid-row:5">
+      <div class="hd">1800 Shift Change</div>
+      <div class="bd"><ul>
+        <li>PPE Routine Inspection <span class="ps">(PSTrax)</span></li>
+        <li>SCBA Check <span class="ps">(PSTrax)</span></li>
+      </ul></div>
+    </div>
+    <div class="box ind" style="grid-column:3/6;grid-row:5/8;align-self:start">
+      <div class="hd">Back at the Station – Complete the Following</div>
+      <div class="bd"><ol>
+        <li>PPE Post Incident Advanced Cleaning <span class="ps">(PSTrax)</span></li>
+        <li>PPE Routine Inspection <span class="ps">(PSTrax)</span></li>
+        <li>SCBA Post Incident Advanced Cleaning <span class="ps">(PSTrax)</span></li>
+        <li>SCBA Check <span class="ps">(PSTrax)</span></li>
+        <li><a href="https://forms.office.com/Pages/ResponsePage.aspx?id=jKLimMbeYkavgqyuOCdWegsZ1CGuolhJs1kMw31341ZUMk5UOTJXRUlMQ0lVUU4zUUdEUUxGVE9STi4u"
+               target="_blank" rel="noopener noreferrer">Exposure Form</a> <span class="ps">(tap to open)</span></li>
+      </ol></div>
+    </div>
+
+    <!-- row 6 -->
+    <div class="v" style="grid-column:1;grid-row:6"></div>
+
+    <!-- row 7 -->
+    <div class="box" style="grid-column:1;grid-row:7">
+      <div class="hd">Day Two Crew Swap</div>
+      <div class="bd"><ul>
+        <li>PPE Routine Inspection <span class="ps">(PSTrax)</span>
+          <span class="note">(Only done on Day Two if Day Two is your first day on shift.)</span></li>
+        <li>SCBA Check <span class="ps">(PSTrax)</span></li>
+      </ul></div>
+    </div>
+
+    <!-- row 8 -->
+    <div class="v" style="grid-column:1;grid-row:8"></div>
+    <div class="v" style="grid-column:3;grid-row:8"></div>
+
+    <!-- row 9 : diamond first in the DOM, same reason as row 3 -->
+    <div class="dia or" style="grid-column:3;grid-row:9">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg>
+      Was a RIT PAK<br>used and<br>cleaning needed?
+    </div>
+    <div class="h l" style="grid-column:2;grid-row:9"><span class="ln"></span><span class="tip"></span><span class="lbl">NO</span></div>
+    <div class="pill g" style="grid-column:1;grid-row:9;align-self:center">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5"/></svg>
+      All tasks complete.<br>Return to normal operations.
+    </div>
+    <div class="h r" style="grid-column:4;grid-row:9"><span class="ln"></span><span class="tip"></span><span class="lbl">YES</span></div>
+    <div class="box rose" style="grid-column:5;grid-row:9;align-self:center">
+      <div class="hd">RIT PAK – Documentation</div>
+      <div class="bd"><ul>
+        <li>Post Incident RIT-PAK Advanced Cleaning <span class="ps">(PSTrax)</span></li>
+        <li>Post Incident RIT-PAK Inspection <span class="ps">(PSTrax)</span></li>
+      </ul></div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5.5-3.5 9-8 10-4.5-1-8-4.5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+    <p>
+      Proper inspection and cleaning protects you, your crew, and our equipment.<br>
+      Document everything in PSTrax.
+      <span class="sr">Stay safe. Stay ready.</span>
+    </p>
+  </div>
+</div>
+
+<div class="src">Reference copy of the station flow chart. PSTrax is the system of record.</div>
+
+</body>
+</html>

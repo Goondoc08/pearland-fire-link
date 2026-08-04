@@ -1,0 +1,12 @@
+# OS / editor junk
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+.vscode/
+.idea/
+
+# scratch + source spreadsheets (the schedule is derived into mando.js)
+_*.json
+*.xlsx
+*.xls

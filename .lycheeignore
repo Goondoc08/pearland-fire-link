@@ -1,0 +1,19 @@
+# Hosts that block automated checkers or sit behind SSO — the checker can't
+# see them, so don't let them cry wolf every Monday. Verify these by hand.
+^tel:
+\.pdf$
+^flowchart\.html$
+^duties\.html$
+forms\.office\.com
+myhr\.pearlandtx\.gov
+b2bbuyersecure\.com
+policy\.lexipol\.com
+app1\.pstrax\.com
+esosuite\.net
+accountaccess\.missionsq\.org
+my\.tmrs\.com
+mykelseyonline\.com
+platform\.vasana\.ai
+connectplus\.app
+apps\.apple\.com
+play\.google\.com

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1216">
+<title>Daily &amp; Weekly Duties</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+    --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+    --red:#e0362c; --amber:#e0a52c; --green:#3aa85f;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+
+  .bar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);
+       padding:calc(env(safe-area-inset-top) + 10px) 14px 10px}
+  .bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .bar a{color:var(--dim);text-decoration:none;font-size:14px}
+  .bar h1{font-size:16px;font-weight:700;margin:0}
+
+  h2{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--faint);
+     margin:24px 0 9px;font-weight:700}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+
+  /* today banner */
+  .today{border-left:4px solid var(--green);margin-top:14px}
+  .today .lbl{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .today .nm{font-size:19px;font-weight:800;margin:3px 0 2px}
+  .today .sub{font-size:13px;color:var(--dim)}
+  .today .det{font-size:14px;color:var(--txt);margin-top:9px;line-height:1.55}
+
+  .flag{display:flex;gap:9px;align-items:flex-start;background:#2c2410;border:1px solid #4a3d18;
+        border-radius:10px;padding:10px 12px;margin-top:11px;font-size:13.5px;color:#e5c375}
+  .flag b{color:#f0d798}
+
+  /* checklists */
+  ul.ck{list-style:none;margin:0;padding:0}
+  ul.ck li{display:flex;gap:11px;align-items:flex-start;padding:9px 2px;border-bottom:1px solid var(--line)}
+  ul.ck li:last-child{border-bottom:0}
+  ul.ck .bx{width:17px;height:17px;border:2px solid var(--faint);border-radius:4px;flex:0 0 auto;margin-top:2px}
+  ul.ck span{font-size:14.5px}
+
+  /* day picker */
+  .days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:11px}
+  .days button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+               border-radius:9px;padding:9px 0;font-size:12px;font-weight:700;cursor:pointer;
+               font-family:inherit}
+  .days button.on{background:var(--red);border-color:var(--red);color:#fff}
+  .days button.is-today{outline:2px solid var(--txt);outline-offset:-2px}
+
+  .dayname{font-size:17px;font-weight:800;margin:0 0 2px}
+  .daysub{font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--red);
+          font-weight:700;margin-bottom:9px}
+  .daybody{font-size:14.5px;line-height:1.6;color:#dbe3ec}
+
+  .note{font-size:13px;color:var(--dim);background:var(--panel);border:1px solid var(--line);
+        border-radius:12px;padding:12px 14px;margin-top:12px;line-height:1.55}
+  .note b{color:var(--txt)}
+  footer{margin-top:30px;font-size:11.5px;color:var(--faint);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-in">
+  <a href="index.html">‹ Back</a>
+  <h1>Daily &amp; Weekly Duties</h1>
+</div></div>
+
+<div class="wrap">
+
+  <div class="card today" id="today">
+    <div class="lbl">Today</div>
+    <div class="nm" id="t-day">—</div>
+    <div class="sub" id="t-shift"></div>
+    <div class="det" id="t-detail"></div>
+    <div id="t-flag"></div>
+  </div>
+
+  <h2>Tour Tasks — every day</h2>
+  <div class="card">
+    <ul class="ck">
+      <li><i class="bx"></i><span>Blow bays out</span></li>
+      <li><i class="bx"></i><span>Keep dorm rooms neat and presentable with beds made</span></li>
+      <li><i class="bx"></i><span>Clean kitchen, wash and put away dishes</span></li>
+      <li><i class="bx"></i><span>Start laundry and fold towels</span></li>
+      <li><i class="bx"></i><span>Take out all trash, inside and bays</span></li>
+      <li><i class="bx"></i><span>Vacuum door mats and entry ways</span></li>
+      <li><i class="bx"></i><span>Sweep and mop floors</span></li>
+    </ul>
+  </div>
+
+  <div class="note">
+    All staff split the assigned tasks daily as instructed by the Officer. It is the
+    responsibility of the crews to establish an action plan to ensure all tasks are completed.
+  </div>
+  <div class="note">
+    <b>All apparatus in each station should be checked on the first day of each tour</b>
+    to ensure readiness, and documented appropriately.
+  </div>
+
+  <h2>Weekly duties</h2>
+  <div class="days" id="days"></div>
+  <div class="card">
+    <div class="dayname" id="d-name"></div>
+    <div class="daysub"  id="d-title"></div>
+    <div class="daybody" id="d-body"></div>
+    <div id="d-extra"></div>
+  </div>
+
+  <footer>Reference copy of the station duty sheet.</footer>
+</div>
+
+<script src="shift.js"></script>
+<script>
+const DUTIES = {
+  1: { title:"Kitchen / Dayroom",
+       body:"Kitchen cleaning includes refrigerators, ovens, grease traps, and wiping cabinets. "
+          + "Wipe down all dayroom furniture including dusting and disinfecting. "
+          + "Sweep and mop underneath moveable furniture." },
+  2: { title:"Apparatus Day — Primary / Frontline", body: apparatusText() },
+  3: { title:"Office / Dorms",
+       body:"Dusting and disinfecting of furniture in office and dorms including fans and closets. "
+          + "Sweep and mop underneath moveable furniture. Organize cabinets/shelves and counters.",
+       extra:{ head:"Day 1 — Cycle Count",
+               text:"Wednesdays that occur on day 1 of the tour are held for cycle count — EMS "
+                  + "supplies and station supplies. All inventory must be counted and documented properly." } },
+  4: { title:"Apparatus Day — Secondary and Reserve", body: apparatusText() },
+  5: { title:"Bathrooms / Laundry / Weightroom",
+       body:"Bathroom cleaning includes scrubbing showers. Disinfect all weight equipment. "
+          + "Clean mirrors and windows. Sweep and mop all rooms accordingly." },
+  6: { title:"Bays / Outside Rooms / Perimeter",
+       body:"Sweep, wash and squeegee/mop apparatus bays and exterior rooms. Organize exterior "
+          + "rooms and work areas. Replace any equipment to its proper place. Wash aprons and "
+          + "porch areas. Dust/wash gear racks. Remove cobwebs. Clean exterior and bay windows. "
+          + "Pick up around the outside of the station." },
+  0: { title:"Sock Hood Sunday",
+       body:"Wash sock hood regardless of condition. Inspect PPE for cleanliness and wash if needed." }
+};
+
+function apparatusText(){
+  return "Check fluids on all units and tools, refill and replace as needed. Inspect and clean "
+       + "engine and pump areas as well as all compartments. Perform a full function test on every "
+       + "piece of mechanical and motorized tool. Clean and inspect patient areas for all necessary "
+       + "equipment and state compliance requirements. Clean all SCBA regulators with cleaning "
+       + "solution. Report all issues properly.";
+}
+
+const DOW  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const ABBR = ['S','M','T','W','T','F','S'];
+
+const now     = new Date();
+const todayIx = now.getDay();
+const sh      = shiftForDate(now);
+
+/* ---- today banner ---- */
+document.getElementById('t-day').textContent = DOW[todayIx];
+document.getElementById('t-shift').textContent =
+  `${sh.letter} shift · day ${sh.dayOf} of 2 · ` +
+  now.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+document.getElementById('t-detail').innerHTML =
+  '<b>' + DUTIES[todayIx].title + '</b>';
+
+/* Wednesday cycle count only lands when Wednesday is day 1 of the tour. */
+const flag = document.getElementById('t-flag');
+if (todayIx === 3 && sh.dayOf === 1){
+  flag.innerHTML = '<div class="flag"><span>▲</span><span><b>Cycle count today.</b> '
+    + 'Wednesday landed on day 1 of the tour — EMS and station supplies must be counted '
+    + 'and documented.</span></div>';
+}
+if (sh.dayOf === 1){
+  flag.insertAdjacentHTML('beforeend',
+    '<div class="flag"><span>▲</span><span><b>Day 1 of the tour.</b> '
+    + 'All apparatus in the station must be checked for readiness and documented.</span></div>');
+}
+
+/* ---- day picker ---- */
+const daysEl = document.getElementById('days');
+[1,2,3,4,5,6,0].forEach(ix => {
+  const b = document.createElement('button');
+  b.textContent = ABBR[ix];
+  b.setAttribute('aria-label', DOW[ix]);
+  if (ix === todayIx) b.classList.add('is-today');
+  b.onclick = () => show(ix);
+  b.dataset.ix = ix;
+  daysEl.appendChild(b);
+});
+
+function show(ix){
+  [...daysEl.children].forEach(b => b.classList.toggle('on', +b.dataset.ix === ix));
+  const d = DUTIES[ix];
+  document.getElementById('d-name').textContent  = DOW[ix];
+  document.getElementById('d-title').textContent = d.title;
+  document.getElementById('d-body').textContent  = d.body;
+  document.getElementById('d-extra').innerHTML = d.extra
+    ? `<div class="flag" style="background:#151a20;border-color:#2a323c;color:#c3ccd6">
+         <span>▲</span><span><b>${d.extra.head}</b><br>${d.extra.text}</span></div>`
+    : '';
+}
+show(todayIx);
+</script>
+</body>
+</html>

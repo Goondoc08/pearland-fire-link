@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1216">
+<title>Pearland Fire Link</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PFD Link">
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+    --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+    --red:#e0362c; --a:#e0362c; --b:#2f7fe0; --c:#3aa85f;
+    --amber:#e0a52c;
+    --r:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--txt);
+    font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding-bottom:env(safe-area-inset-bottom);
+    overscroll-behavior-y:contain;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px 60px}
+
+  /* ---------- header ---------- */
+  header{
+    position:sticky; top:0; z-index:20; background:var(--bg);
+    padding:calc(env(safe-area-inset-top) + 12px) 14px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .hdr-in{max-width:760px;margin:0 auto}
+  .brand{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+  .brand svg{width:24px;height:24px;flex:0 0 auto}
+  .brand h1{font-size:17px;font-weight:700;letter-spacing:.2px;margin:0}
+  .brand .unof{
+    margin-left:auto;font-size:10px;letter-spacing:.7px;text-transform:uppercase;
+    color:var(--faint);border:1px solid var(--line);padding:2px 7px;border-radius:20px;
+  }
+
+  /* shift bar */
+  .shiftbar{
+    display:flex;align-items:center;gap:10px;width:100%;
+    background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dim);
+    border-radius:10px;padding:9px 12px;margin-bottom:9px;
+    color:var(--txt);font:inherit;text-align:left;cursor:pointer;
+  }
+  .shiftbar .lt{
+    font-size:22px;font-weight:800;line-height:1;width:26px;text-align:center;
+  }
+  .shiftbar .meta{flex:1;min-width:0}
+  .shiftbar .d1{font-size:13px;font-weight:600}
+  .shiftbar .d2{font-size:11.5px;color:var(--dim)}
+  .shiftbar .chev{color:var(--faint);font-size:12px;transition:transform .18s}
+  .shiftbar.open .chev{transform:rotate(180deg)}
+  .sA{border-left-color:var(--a)} .sA .lt{color:var(--a)}
+  .sB{border-left-color:var(--b)} .sB .lt{color:var(--b)}
+  .sC{border-left-color:var(--c)} .sC .lt{color:var(--c)}
+
+  /* search */
+  .search{position:relative}
+  .search input{
+    width:100%;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:11px 36px 11px 36px;color:var(--txt);font-size:16px;
+    outline:none;
+  }
+  .search input:focus{border-color:var(--faint)}
+  .search .mag{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--faint)}
+  .search .clr{
+    position:absolute;right:6px;top:50%;transform:translateY(-50%);
+    background:none;border:0;color:var(--faint);font-size:20px;padding:4px 8px;cursor:pointer;display:none;
+  }
+  .search input:not(:placeholder-shown) ~ .clr{display:block}
+
+  /* ---------- calendar ---------- */
+  #cal{display:none;margin-bottom:9px}
+  #cal.show{display:block}
+  .calbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .calnav{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .calnav button{
+    background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+    border-radius:8px;width:32px;height:30px;font-size:15px;cursor:pointer;
+  }
+  .calnav .mo{flex:1;text-align:center;font-size:13.5px;font-weight:600}
+  .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .dow{font-size:10px;color:var(--faint);text-align:center;padding-bottom:3px;font-weight:600}
+  .day{
+    aspect-ratio:1/1.05;border-radius:7px;background:var(--panel2);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    font-size:11.5px;
+  }
+  .day.pad{background:transparent}
+  .day .n{color:var(--dim);font-size:11px;line-height:1}
+  .day .s{font-weight:800;font-size:13px;line-height:1}
+  .day.a .s{color:var(--a)} .day.b .s{color:var(--b)} .day.c .s{color:var(--c)}
+  .day.today{outline:2px solid var(--txt);outline-offset:-2px}
+  .day.today .n{color:var(--txt);font-weight:700}
+  .callegend{display:flex;gap:14px;justify-content:center;margin-top:9px;font-size:11px;color:var(--dim)}
+  .callegend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+
+  /* ---------- link sections ---------- */
+  h2{
+    font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--faint);
+    margin:22px 0 9px;font-weight:700;display:flex;align-items:center;gap:7px;
+  }
+  h2 svg{width:13px;height:13px}
+  .tiles{display:grid;grid-template-columns:1fr;gap:7px}
+  @media(min-width:540px){.tiles{grid-template-columns:1fr 1fr}}
+
+  a.tile{
+    display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--txt);
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+    padding:13px 13px;min-height:62px;transition:background .12s,border-color .12s;
+  }
+  a.tile:active{background:var(--panel2)}
+  @media(hover:hover){a.tile:hover{border-color:var(--faint);background:var(--panel2)}}
+  .tile .body{flex:1;min-width:0}
+  .tile .nm{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .tile .ds{font-size:12px;color:var(--dim);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .tile .go{color:var(--faint);font-size:15px;flex:0 0 auto}
+  .tile.urgent{border-color:#5a2320;background:#1d1413}
+  .tile.urgent .nm{color:#ff7a70}
+
+  .badge{
+    font-size:9px;letter-spacing:.5px;text-transform:uppercase;font-weight:700;
+    padding:2px 6px;border-radius:5px;white-space:nowrap;
+  }
+  .b-wifi{background:#3a2f12;color:#e0b64a}
+  .b-app{background:#12303a;color:#4ab6e0}
+
+  .empty{text-align:center;color:var(--faint);font-size:14px;padding:40px 0}
+
+  /* ---------- footer ---------- */
+  footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.6}
+  footer a{color:var(--dim)}
+  footer .disc{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:11px 13px;margin-bottom:12px;color:var(--dim);font-size:11.5px;
+  }
+  footer .disc b{color:var(--txt)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-in">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#e0362c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2s5 4.5 5 9a5 5 0 0 1-10 0c0-1.5.6-2.8 1.3-3.8.5 1.1 1.3 1.8 2.2 1.8 0-2.6.9-5 1.5-7z"/>
+        <path d="M12 22a7 7 0 0 0 7-7"/><path d="M5 15a7 7 0 0 0 7 7"/>
+      </svg>
+      <h1>Pearland Fire Link</h1>
+      <span class="unof">Unofficial</span>
+    </div>
+
+    <button class="shiftbar" id="shiftbar" aria-expanded="false">
+      <span class="lt" id="sh-lt">–</span>
+      <span class="meta">
+        <span class="d1" id="sh-d1">Loading…</span><br>
+        <span class="d2" id="sh-d2"></span>
+      </span>
+      <span class="chev">▼</span>
+    </button>
+
+    <div class="search">
+      <span class="mag">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </span>
+      <input id="q" type="search" placeholder="Search links…" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="clr" id="clr" aria-label="Clear">×</button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="cal">
+    <div class="calbox">
+      <div class="calnav">
+        <button id="prev" aria-label="Previous month">‹</button>
+        <div class="mo" id="molabel"></div>
+        <button id="next" aria-label="Next month">›</button>
+      </div>
+      <div class="grid7" id="dows"></div>
+      <div class="grid7" id="days"></div>
+      <div class="callegend">
+        <span><i style="background:var(--a)"></i>A</span>
+        <span><i style="background:var(--b)"></i>B</span>
+        <span><i style="background:var(--c)"></i>C</span>
+      </div>
+    </div>
+  </div>
+
+  <main id="out"></main>
+
+  <footer>
+    <div class="disc">
+      <b>Unofficial.</b> Not created, endorsed, or maintained by the City of Pearland or
+      Pearland Fire Department. Every tile links out to the official source — nothing is
+      hosted or copied here. Always verify protocols and policy against the authoritative
+      source before acting on them.
+    </div>
+    Links last reviewed <span id="lastup"></span>.<br>
+    Broken link or something missing?
+    <a id="report" href="#">Report it</a>.
+  </footer>
+</div>
+
+<script src="shift.js"></script>
+<script src="mando.js"></script>
+<script src="links.js"></script>
+<script>
+/* ---------- header shift bar ---------- */
+const now = new Date();
+const TY = now.getFullYear(), TM = now.getMonth(), TD = now.getDate();
+(function renderShiftBar(){
+  const s = shiftFor(TY, TM, TD);
+  const bar = document.getElementById('shiftbar');
+  bar.classList.add('s' + s.letter);
+  document.getElementById('sh-lt').textContent = s.letter;
+  document.getElementById('sh-d1').textContent =
+    now.toLocaleDateString(undefined, {weekday:'long', month:'short', day:'numeric'});
+
+  // find the next day this platoon comes back on
+  let off = 1;
+  while (off < 40) {
+    const n = new Date(TY, TM, TD + off);
+    const ns = shiftFor(n.getFullYear(), n.getMonth(), n.getDate());
+    if (ns.letter === s.letter && ns.dayOf === 1) break;
+    off++;
+  }
+  const back = new Date(TY, TM, TD + off);
+  document.getElementById('sh-d2').textContent =
+    `${s.letter} shift · day ${s.dayOf} of 2 · back on ` +
+    back.toLocaleDateString(undefined, {weekday:'short', month:'numeric', day:'numeric'});
+})();
+
+/* ---------- calendar ---------- */
+let calY = TY, calM = TM;
+const MON = ['January','February','March','April','May','June',
+             'July','August','September','October','November','December'];
+
+document.getElementById('dows').innerHTML =
+  ['S','M','T','W','T','F','S'].map(d => `<div class="dow">${d}</div>`).join('');
+
+function drawCal(){
+  document.getElementById('molabel').textContent = MON[calM] + ' ' + calY;
+  const first = new Date(calY, calM, 1).getDay();
+  const len   = new Date(calY, calM + 1, 0).getDate();
+  let html = '';
+  for (let i = 0; i < first; i++) html += '<div class="day pad"></div>';
+  for (let d = 1; d <= len; d++){
+    const s = shiftFor(calY, calM, d);
+    const isToday = (d === TD && calM === TM && calY === TY);
+    html += `<div class="day ${s.letter.toLowerCase()}${isToday ? ' today' : ''}">
+               <span class="n">${d}</span><span class="s">${s.letter}</span>
+             </div>`;
+  }
+  document.getElementById('days').innerHTML = html;
+}
+drawCal();
+
+document.getElementById('prev').onclick = () => {
+  if (--calM < 0){ calM = 11; calY--; } drawCal();
+};
+document.getElementById('next').onclick = () => {
+  if (++calM > 11){ calM = 0; calY++; } drawCal();
+};
+document.getElementById('shiftbar').onclick = function(){
+  const c = document.getElementById('cal');
+  const open = c.classList.toggle('show');
+  this.classList.toggle('open', open);
+  this.setAttribute('aria-expanded', open);
+};
+
+/* ============================================================
+   LINKS
+   ============================================================ */
+const UA = navigator.userAgent;
+const IS_IOS = /iPad|iPhone|iPod/.test(UA) ||
+               (UA.includes('Mac') && 'ontouchend' in document);
+const IS_ANDROID = /Android/.test(UA);
+
+function urlFor(it){
+  if (IS_IOS && it.ios) return it.ios;
+  if (IS_ANDROID && it.android) return it.android;
+  return it.url;
+}
+
+const ICONS = {
+  siren:'<path d="M12 3a5 5 0 0 0-5 5v5h10V8a5 5 0 0 0-5-5z"/><path d="M4 18h16v3H4z"/><path d="M12 3V1"/>',
+  badge:'<path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6z"/>',
+  shield:'<path d="M12 2l8 4v6c0 5.5-3.5 9-8 10-4.5-1-8-4.5-8-10V6z"/><path d="M9 12l2 2 4-4"/>',
+  flag:'<path d="M4 22V3"/><path d="M4 4h13l-2 4 2 4H4"/>',
+  heart:'<path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"/>',
+  map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/>',
+  clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9z"/><path d="M9 11h6"/><path d="M9 15h4"/>'
+};
+
+function tileHTML(it){
+  const badges =
+    (it.offsite ? '<span class="badge b-wifi">Off City WiFi</span>' : '') +
+    (it.app     ? '<span class="badge b-app">App</span>'            : '');
+  const href = urlFor(it);
+  // local pages stay in the app; everything else opens out
+  const local = !/^(https?:|tel:)/.test(href);
+  const ext  = (href.startsWith('tel:') || local) ? '' : ' target="_blank" rel="noopener noreferrer"';
+  const sch  = it.scheme ? ` data-scheme="${it.scheme}"` : '';
+  const cls  = it.urgent ? ' urgent' : '';
+  const id   = it.id ? ` data-id="${it.id}"` : '';
+  return `<a class="tile${cls}" href="${href}"${ext}${sch}${id}>
+    <span class="body">
+      <span class="nm">${it.name}${badges}</span>
+      <span class="ds">${it.desc}</span>
+    </span>
+    <span class="go">›</span>
+  </a>`;
+}
+
+function render(filter){
+  const f = (filter || '').trim().toLowerCase();
+  const out = document.getElementById('out');
+  let html = '', hits = 0;
+
+  LINKS.forEach(sec => {
+    const items = f
+      ? sec.items.filter(it =>
+          (it.name + ' ' + it.desc + ' ' + sec.category).toLowerCase().includes(f))
+      : sec.items;
+    if (!items.length) return;
+    hits += items.length;
+    const ic = ICONS[sec.icon] || ICONS.flag;
+    html += `<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ic}</svg>
+             ${sec.category}</h2>
+             <div class="tiles">${items.map(tileHTML).join('')}</div>`;
+  });
+
+  out.innerHTML = hits ? html : '<div class="empty">No links match that.</div>';
+  mandoBlurb();
+}
+
+/* If a mando group has been picked, show its next date right on the tile. */
+function mandoBlurb(){
+  const tile = document.querySelector('a.tile[data-id="mando"]');
+  if (!tile || typeof mandoSessions !== 'function') return;
+  const v = localStorage.getItem('pfd-mando-group');
+  if (!v || !/^[ABC][1-7]$/.test(v)) return;
+
+  const today = mandoToday();
+  const s = mandoSessions(v[0], +v[1], today, 1)[0];
+  if (!s) return;
+
+  const d = Math.round((s.day1 - today) / 86400000);
+  const when = d < 0 ? 'in progress'
+             : d === 0 ? 'today'
+             : d === 1 ? 'tomorrow'
+             : `in ${d} days`;
+  const dates = new Date(s.day1).toLocaleDateString(undefined,
+                  {timeZone:'UTC', month:'short', day:'numeric'})
+              + '–' + new Date(s.day2).toLocaleDateString(undefined,
+                  {timeZone:'UTC', day:'numeric'});
+  tile.querySelector('.ds').textContent = `${v} · ${dates} · ${when}`;
+}
+
+render();
+
+/* search */
+const q = document.getElementById('q');
+q.addEventListener('input', () => render(q.value));
+document.getElementById('clr').onclick = () => { q.value = ''; render(); q.focus(); };
+
+/* Try to open an installed app first (Handtevy et al.), fall back to the
+   store/web URL if nothing handles the scheme within a beat. */
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.tile[data-scheme]');
+  if (!a || !(IS_IOS || IS_ANDROID)) return;
+  e.preventDefault();
+  const fallback = a.getAttribute('href');
+  const t = setTimeout(() => { window.location.href = fallback; }, 900);
+  document.addEventListener('visibilitychange', function once(){
+    if (document.hidden) { clearTimeout(t); document.removeEventListener('visibilitychange', once); }
+  });
+  window.location.href = a.dataset.scheme;
+});
+
+/* footer */
+document.getElementById('lastup').textContent =
+  new Date(LAST_UPDATED + 'T12:00:00').toLocaleDateString(undefined, {month:'long', day:'numeric', year:'numeric'});
+document.getElementById('report').href =
+  'mailto:?subject=' + encodeURIComponent('Pearland Fire Link — broken link') +
+  '&body=' + encodeURIComponent('Which link:\n\nWhat happened:\n\n');
+
+/* service worker */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1216">
+<title>Mando Schedule</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+  :root{
+    --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+    --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+    --a:#e0362c; --b:#2f7fe0; --c:#3aa85f; --amber:#e0a52c;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+
+  .bar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);
+       padding:calc(env(safe-area-inset-top) + 10px) 14px 10px}
+  .bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .bar a{color:var(--dim);text-decoration:none;font-size:14px}
+  .bar h1{font-size:16px;font-weight:700;margin:0}
+
+  h2{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--faint);
+     margin:24px 0 9px;font-weight:700}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px}
+
+  /* group picker */
+  .shifts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:8px}
+  .shifts button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+                 border-radius:10px;padding:11px 0;font:700 15px inherit;cursor:pointer;
+                 font-family:inherit}
+  .shifts button.on{color:#fff}
+  .shifts button[data-s="A"].on{background:var(--a);border-color:var(--a)}
+  .shifts button[data-s="B"].on{background:var(--b);border-color:var(--b)}
+  .shifts button[data-s="C"].on{background:var(--c);border-color:var(--c)}
+
+  .nums{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .nums button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
+               border-radius:9px;padding:11px 0;font:700 15px inherit;cursor:pointer;
+               font-family:inherit}
+  .nums button.on{background:var(--txt);border-color:var(--txt);color:#0f1216}
+
+  /* hero */
+  .hero{margin-top:14px;border-left:4px solid var(--faint)}
+  .hero.sA{border-left-color:var(--a)} .hero.sB{border-left-color:var(--b)} .hero.sC{border-left-color:var(--c)}
+  .hero .lbl{font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .hero .when{font-size:26px;font-weight:800;margin:5px 0 2px;line-height:1.15}
+  .hero .dates{font-size:15px;color:var(--txt);margin-top:4px}
+  .hero .sub{font-size:13px;color:var(--dim);margin-top:6px}
+
+  .pillrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+  .pill{font-size:11px;letter-spacing:.5px;text-transform:uppercase;font-weight:700;
+        padding:3px 9px;border-radius:6px;background:var(--panel2);color:var(--dim)}
+  .pill.now{background:#3a1512;color:#ff8a80}
+  .pill.soon{background:#3a2f12;color:#e0b64a}
+
+  /* upcoming list */
+  ul.up{list-style:none;margin:0;padding:0}
+  ul.up li{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line)}
+  ul.up li:last-child{border-bottom:0}
+  ul.up .dt{flex:1;min-width:0}
+  ul.up .d1{font-size:15px;font-weight:650}
+  ul.up .d2{font-size:12px;color:var(--dim);margin-top:1px}
+  ul.up .away{font-size:12px;color:var(--faint);white-space:nowrap;font-weight:600}
+  ul.up li.next{background:#141a20;border-radius:10px;padding-left:11px;padding-right:11px}
+  ul.up li.next .d1{color:#fff}
+
+  .brk{display:flex;align-items:center;gap:10px;padding:9px 2px;color:var(--amber);
+       font-size:12px;font-weight:700;letter-spacing:.4px}
+  .brk .ln{flex:1;height:1px;background:#3a3018}
+
+  .note{font-size:12.5px;color:var(--dim);background:var(--panel);border:1px solid var(--line);
+        border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.55}
+  .note b{color:var(--txt)}
+  .empty{color:var(--faint);text-align:center;padding:26px 0;font-size:14px}
+  footer{margin-top:28px;font-size:11.5px;color:var(--faint);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-in">
+  <a href="index.html">‹ Back</a>
+  <h1>Mando Schedule</h1>
+</div></div>
+
+<div class="wrap">
+
+  <h2>Your group</h2>
+  <div class="card">
+    <div class="shifts" id="shifts"></div>
+    <div class="nums"   id="nums"></div>
+  </div>
+
+  <div class="card hero" id="hero" style="display:none">
+    <div class="lbl">Your next mando</div>
+    <div class="when"  id="h-when"></div>
+    <div class="dates" id="h-dates"></div>
+    <div class="sub"   id="h-sub"></div>
+    <div class="pillrow" id="h-pills"></div>
+  </div>
+
+  <h2 id="up-h" style="display:none">Upcoming</h2>
+  <div class="card" id="up-card" style="display:none"><ul class="up" id="up"></ul></div>
+
+  <div class="note" id="intro">
+    Pick your station/shift group above. Mando runs on the middle two of your four days
+    off, every 36 days, with a longer break every seventh turn.
+  </div>
+
+  <footer>Reference copy of the department mando worksheet.</footer>
+</div>
+
+<script src="mando.js"></script>
+<script>
+const KEY = 'pfd-mando-group';
+let sel = { shift:null, group:null };
+
+/* ---------- build the picker ---------- */
+const shiftsEl = document.getElementById('shifts');
+['A','B','C'].forEach(s => {
+  const b = document.createElement('button');
+  b.textContent = s + ' Shift'; b.dataset.s = s;
+  b.onclick = () => { sel.shift = s; save(); render(); };
+  shiftsEl.appendChild(b);
+});
+const numsEl = document.getElementById('nums');
+for (let g = 1; g <= MANDO_GROUPS; g++){
+  const b = document.createElement('button');
+  b.textContent = g; b.dataset.g = g;
+  b.onclick = () => { sel.group = g; save(); render(); };
+  numsEl.appendChild(b);
+}
+
+function save(){
+  if (sel.shift && sel.group) localStorage.setItem(KEY, sel.shift + sel.group);
+}
+(function load(){
+  const v = localStorage.getItem(KEY);
+  if (v && /^[ABC][1-7]$/.test(v)){ sel.shift = v[0]; sel.group = +v[1]; }
+})();
+
+/* ---------- formatting ---------- */
+const F = (ms, opt) => new Date(ms).toLocaleDateString(undefined,
+            Object.assign({timeZone:'UTC'}, opt));
+
+function range(day1, day2){
+  const w1 = F(day1, {weekday:'short'}), w2 = F(day2, {weekday:'short'});
+  const m1 = F(day1, {month:'short'}),   m2 = F(day2, {month:'short'});
+  const n1 = new Date(day1).getUTCDate(), n2 = new Date(day2).getUTCDate();
+  // same month -> "Thu–Fri, Aug 13–14";  across a month -> "Mon Aug 31 – Tue Sep 1"
+  return (m1 === m2) ? `${w1}–${w2}, ${m1} ${n1}–${n2}`
+                     : `${w1} ${m1} ${n1} – ${w2} ${m2} ${n2}`;
+}
+
+function awayText(n){
+  if (n < 0)   return 'in progress';
+  if (n === 0) return 'today';
+  if (n === 1) return 'tomorrow';
+  if (n < 14)  return `in ${n} days`;
+  if (n < 60){ const w = Math.round(n / 7);  return `in ${w} week${w === 1 ? '' : 's'}`; }
+  const m = Math.round(n / 30);              return `in ${m} month${m === 1 ? '' : 's'}`;
+}
+
+/* ---------- render ---------- */
+function render(){
+  [...shiftsEl.children].forEach(b => b.classList.toggle('on', b.dataset.s === sel.shift));
+  [...numsEl.children].forEach(b => b.classList.toggle('on', +b.dataset.g === sel.group));
+
+  const ready = sel.shift && sel.group;
+  document.getElementById('intro').style.display   = ready ? 'none' : '';
+  document.getElementById('hero').style.display    = ready ? '' : 'none';
+  document.getElementById('up-h').style.display    = ready ? '' : 'none';
+  document.getElementById('up-card').style.display = ready ? '' : 'none';
+  if (!ready) return;
+
+  const today = mandoToday();
+  const list  = mandoSessions(sel.shift, sel.group, today, 10);
+  const hero  = document.getElementById('hero');
+  hero.className = 'card hero s' + sel.shift;
+
+  if (!list.length){
+    document.getElementById('h-when').textContent = '—';
+    document.getElementById('up').innerHTML = '<li class="empty">Nothing scheduled.</li>';
+    return;
+  }
+
+  const nx   = list[0];
+  const days = Math.round((nx.day1 - today) / 86400000);
+  const inProgress = today >= nx.day1 && today <= nx.day2;
+
+  document.getElementById('h-when').textContent  =
+    inProgress ? (today === nx.day1 ? 'Today' : 'Today (day 2)') : awayText(days);
+  document.getElementById('h-dates').textContent = range(nx.day1, nx.day2);
+  document.getElementById('h-sub').textContent = `Group ${sel.shift}${sel.group}`;
+
+  const pills = [];
+  if (inProgress || days === 0)      pills.push('<span class="pill now">Happening now</span>');
+  else if (days > 0 && days <= 7)    pills.push('<span class="pill soon">This week</span>');
+  if (nx.isBreak)                    pills.push('<span class="pill">First after your break</span>');
+  document.getElementById('h-pills').innerHTML = pills.join('');
+
+  /* upcoming */
+  let html = '';
+  list.forEach((s, i) => {
+    if (s.isBreak && i > 0){
+      html += `<li style="border:0;padding:0"><div class="brk"><span class="ln"></span>`
+            + `BREAK — ${s.gapBefore} DAYS OFF ROTATION<span class="ln"></span></div></li>`;
+    }
+    const d = Math.round((s.day1 - today) / 86400000);
+    html += `<li class="${i===0?'next':''}">
+      <span class="dt">
+        <span class="d1">${range(s.day1, s.day2)}</span>
+        <span class="d2">${F(s.day1, {year:'numeric', month:'long'})}</span>
+      </span>
+      <span class="away">${awayText(d)}</span>
+    </li>`;
+  });
+  document.getElementById('up').innerHTML = html;
+}
+render();
+</script>
+</body>
+</html>

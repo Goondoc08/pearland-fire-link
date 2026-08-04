@@ -1,0 +1,39 @@
+name: Link check
+
+# Runs every Monday at 13:00 UTC (8am CT) and on demand.
+# If any link in links.js breaks, this opens a GitHub issue so you find out
+# before someone on shift does. Free on public repos; no API keys needed.
+
+on:
+  schedule:
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check links
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-retries 2
+            --timeout 25
+            --accept 200,201,202,203,204,206,301,302,303,307,308,401,403,405,429
+            links.js
+          fail: false
+
+      - name: Open an issue if anything is broken
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: Broken link(s) in links.js
+          content-filepath: ./lychee/out.md
+          labels: broken-link
