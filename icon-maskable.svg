@@ -1,9 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- full bleed: launchers crop maskable icons to a circle/squircle -->
   <rect width="512" height="512" fill="#0f1216"/>
+
+  <!-- everything scaled to 0.72 so it survives the maskable safe-zone crop -->
   <g transform="translate(256 256) scale(0.72) translate(-256 -256)">
-    <path d="M256 96s96 86 96 172a96 96 0 0 1-192 0c0-29 11-54 25-73 10 21 25 34 42 34 0-50 17-96 29-133z"
-          fill="none" stroke="#e0362c" stroke-width="30" stroke-linejoin="round"/>
-    <path d="M256 428a134 134 0 0 0 134-134" fill="none" stroke="#e0362c" stroke-width="26" stroke-linecap="round" opacity=".55"/>
-    <path d="M122 294a134 134 0 0 0 134 134" fill="none" stroke="#e0362c" stroke-width="26" stroke-linecap="round" opacity=".55"/>
+    <g transform="translate(256 262) scale(1.02) translate(-256 -230)">
+      <path d="M256 96s96 86 96 172a96 96 0 0 1-192 0c0-29 11-54 25-73 10 21 25 34 42 34 0-50 17-96 29-133z"
+            fill="#e0362c" fill-opacity="0.20"
+            stroke="#e0362c" stroke-opacity="0.55" stroke-width="16" stroke-linejoin="round"/>
+    </g>
+    <g transform="translate(256 316) skewX(-8)">
+      <text x="0" y="0" text-anchor="middle"
+            font-family="'Arial Black','Helvetica Neue',Helvetica,Arial,sans-serif"
+            font-weight="900" font-size="176" letter-spacing="-13"
+            fill="#e0362c" stroke="#ffffff" stroke-width="14"
+            paint-order="stroke" stroke-linejoin="round">PFD</text>
+    </g>
   </g>
 </svg>
