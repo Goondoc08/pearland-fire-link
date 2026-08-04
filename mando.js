@@ -98,6 +98,23 @@ function mandoNext(shift, group){
   return mandoSessions(shift, group, mandoToday(), 1)[0] || null;
 }
 
+/* Which group's mando falls on a given day? -> {shift, group, dayOf} or null.
+   `ms` must be a UTC midnight, e.g. Date.UTC(y, m, d).
+
+   Every calendar day belongs to exactly one session: A starts the 6-day slot
+   and covers days 0-1, B covers 2-3, C covers 4-5. So this never returns null
+   once the schedule has started. */
+function mandoOnDate(ms){
+  for (const shift of ['A','B','C']){
+    for (let dayOf = 1; dayOf <= 2; dayOf++){
+      const diff = ms - (dayOf - 1) * DAY - MANDO_ANCHOR[shift];
+      if (diff < 0 || diff % (6 * DAY)) continue;
+      return { shift, group: mandoGroupForSlot(diff / (6 * DAY)), dayOf };
+    }
+  }
+  return null;
+}
+
 /* All valid group ids, e.g. "A1" ... "C7" */
 function mandoAllGroups(){
   const out = [];

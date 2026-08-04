@@ -90,13 +90,16 @@
   .grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
   .dow{font-size:10px;color:var(--faint);text-align:center;padding-bottom:3px;font-weight:600}
   .day{
-    aspect-ratio:1/1.05;border-radius:7px;background:var(--panel2);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    aspect-ratio:1/1.22;border-radius:7px;background:var(--panel2);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
     font-size:11.5px;
   }
   .day.pad{background:transparent}
-  .day .n{color:var(--dim);font-size:11px;line-height:1}
+  .day .n{color:var(--dim);font-size:10.5px;line-height:1}
   .day .s{font-weight:800;font-size:13px;line-height:1}
+  /* mando group whose session falls on this day */
+  .day .m{font-size:8.5px;font-weight:700;line-height:1;color:var(--faint);letter-spacing:.2px}
+  .day .m.mine{color:#f0c063;background:#3a2f12;border-radius:3px;padding:1.5px 3.5px}
   .day.a .s{color:var(--a)} .day.b .s{color:var(--b)} .day.c .s{color:var(--c)}
   .day.today{outline:2px solid var(--txt);outline-offset:-2px}
   .day.today .n{color:var(--txt);font-weight:700}
@@ -191,6 +194,7 @@
         <span><i style="background:var(--a)"></i>A</span>
         <span><i style="background:var(--b)"></i>B</span>
         <span><i style="background:var(--c)"></i>C</span>
+        <span style="color:var(--faint)">small tag = mando group</span>
       </div>
     </div>
   </div>
@@ -253,11 +257,21 @@ function drawCal(){
   const len   = new Date(calY, calM + 1, 0).getDate();
   let html = '';
   for (let i = 0; i < first; i++) html += '<div class="day pad"></div>';
+  const myGroup = localStorage.getItem('pfd-mando-group');
   for (let d = 1; d <= len; d++){
     const s = shiftFor(calY, calM, d);
     const isToday = (d === TD && calM === TM && calY === TY);
+    // small tag: which group has mando that day
+    let tag = '';
+    if (typeof mandoOnDate === 'function'){
+      const mg = mandoOnDate(Date.UTC(calY, calM, d));
+      if (mg){
+        const id = mg.shift + mg.group;
+        tag = `<span class="m${id === myGroup ? ' mine' : ''}">${id}</span>`;
+      }
+    }
     html += `<div class="day ${s.letter.toLowerCase()}${isToday ? ' today' : ''}">
-               <span class="n">${d}</span><span class="s">${s.letter}</span>
+               <span class="n">${d}</span><span class="s">${s.letter}</span>${tag}
              </div>`;
   }
   document.getElementById('days').innerHTML = html;
@@ -392,7 +406,8 @@ document.addEventListener('click', e => {
 document.getElementById('lastup').textContent =
   new Date(LAST_UPDATED + 'T12:00:00').toLocaleDateString(undefined, {month:'long', day:'numeric', year:'numeric'});
 document.getElementById('report').href =
-  'mailto:?subject=' + encodeURIComponent('Pearland Fire Link — broken link') +
+  'mailto:nicholas.matula@gmail.com?subject=' +
+  encodeURIComponent('Pearland Fire Link — broken link') +
   '&body=' + encodeURIComponent('Which link:\n\nWhat happened:\n\n');
 
 /* service worker */
