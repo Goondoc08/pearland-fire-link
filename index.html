@@ -360,10 +360,10 @@ function mandoBlurb(){
              : d === 0 ? 'today'
              : d === 1 ? 'tomorrow'
              : `in ${d} days`;
-  const dates = new Date(s.day1).toLocaleDateString(undefined,
-                  {timeZone:'UTC', month:'short', day:'numeric'})
-              + '–' + new Date(s.day2).toLocaleDateString(undefined,
-                  {timeZone:'UTC', day:'numeric'});
+  const f = (ms, o) => new Date(ms).toLocaleDateString(undefined, Object.assign({timeZone:'UTC'}, o));
+  const sameMonth = new Date(s.day1).getUTCMonth() === new Date(s.day2).getUTCMonth();
+  const dates = f(s.day1, {month:'short', day:'numeric'}) + '–'
+              + f(s.day2, sameMonth ? {day:'numeric'} : {month:'short', day:'numeric'});
   tile.querySelector('.ds').textContent = `${v} · ${dates} · ${when}`;
 }
 
