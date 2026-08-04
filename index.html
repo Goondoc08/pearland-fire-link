@@ -97,9 +97,10 @@
   .day.pad{background:transparent}
   .day .n{color:var(--dim);font-size:10.5px;line-height:1}
   .day .s{font-weight:800;font-size:13px;line-height:1}
-  /* mando group whose session falls on this day */
+  /* mando group whose session falls on this day — grey label by default,
+     amber on the two days of the session that is running right now */
   .day .m{font-size:8.5px;font-weight:700;line-height:1;color:var(--faint);letter-spacing:.2px}
-  .day .m.mine{color:#f0c063;background:#3a2f12;border-radius:3px;padding:1.5px 3.5px}
+  .day .m.active{color:#f0c063;background:#3a2f12;border-radius:3px;padding:1.5px 3.5px}
   .day.a .s{color:var(--a)} .day.b .s{color:var(--b)} .day.c .s{color:var(--c)}
   .day.today{outline:2px solid var(--txt);outline-offset:-2px}
   .day.today .n{color:var(--txt);font-weight:700}
@@ -115,10 +116,19 @@
   .tiles{display:grid;grid-template-columns:1fr;gap:7px}
   @media(min-width:540px){.tiles{grid-template-columns:1fr 1fr}}
 
+  .tilewrap{position:relative}
+  .star{
+    position:absolute;right:5px;top:50%;transform:translateY(-50%);
+    background:none;border:0;color:#3f4a56;font-size:20px;line-height:1;
+    padding:9px 10px;cursor:pointer;border-radius:9px;font-family:inherit;
+  }
+  .star:active{background:var(--panel2)}
+  .star.on{color:#f0c063}
+
   a.tile{
     display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--txt);
     background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-    padding:13px 13px;min-height:62px;transition:background .12s,border-color .12s;
+    padding:13px 40px 13px 13px;min-height:62px;transition:background .12s,border-color .12s;
   }
   a.tile:active{background:var(--panel2)}
   @media(hover:hover){a.tile:hover{border-color:var(--faint);background:var(--panel2)}}
@@ -194,7 +204,7 @@
         <span><i style="background:var(--a)"></i>A</span>
         <span><i style="background:var(--b)"></i>B</span>
         <span><i style="background:var(--c)"></i>C</span>
-        <span style="color:var(--faint)">small tag = mando group</span>
+        <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = on now</span>
       </div>
     </div>
   </div>
@@ -257,18 +267,24 @@ function drawCal(){
   const len   = new Date(calY, calM + 1, 0).getDate();
   let html = '';
   for (let i = 0; i < first; i++) html += '<div class="day pad"></div>';
-  const myGroup = localStorage.getItem('pfd-mando-group');
+  /* The session running right now — both of its days go amber. It rolls
+     forward on its own: when B5's two days are done, C5 lights up next. */
+  let live = [];
+  if (typeof mandoOnDate === 'function'){
+    const t = Date.UTC(TY, TM, TD);
+    const m = mandoOnDate(t);
+    if (m) live = m.dayOf === 1 ? [t, t + 86400000] : [t - 86400000, t];
+  }
+
   for (let d = 1; d <= len; d++){
     const s = shiftFor(calY, calM, d);
     const isToday = (d === TD && calM === TM && calY === TY);
     // small tag: which group has mando that day
     let tag = '';
     if (typeof mandoOnDate === 'function'){
-      const mg = mandoOnDate(Date.UTC(calY, calM, d));
-      if (mg){
-        const id = mg.shift + mg.group;
-        tag = `<span class="m${id === myGroup ? ' mine' : ''}">${id}</span>`;
-      }
+      const ms = Date.UTC(calY, calM, d);
+      const mg = mandoOnDate(ms);
+      if (mg) tag = `<span class="m${live.includes(ms) ? ' active' : ''}">${mg.shift}${mg.group}</span>`;
     }
     html += `<div class="day ${s.letter.toLowerCase()}${isToday ? ' today' : ''}">
                <span class="n">${d}</span><span class="s">${s.letter}</span>${tag}
@@ -312,6 +328,7 @@ const ICONS = {
   flag:'<path d="M4 22V3"/><path d="M4 4h13l-2 4 2 4H4"/>',
   heart:'<path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"/>',
   map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14"/><path d="M15 6v14"/>',
+  star:'<path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.4l6.1-.8z"/>',
   clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1H9z"/><path d="M9 11h6"/><path d="M9 15h4"/>'
 };
 
@@ -326,19 +343,52 @@ function tileHTML(it){
   const sch  = it.scheme ? ` data-scheme="${it.scheme}"` : '';
   const cls  = it.urgent ? ' urgent' : '';
   const id   = it.id ? ` data-id="${it.id}"` : '';
-  return `<a class="tile${cls}" href="${href}"${ext}${sch}${id}>
-    <span class="body">
-      <span class="nm">${it.name}${badges}</span>
-      <span class="ds">${it.desc}</span>
-    </span>
-    <span class="go">›</span>
-  </a>`;
+  const fav  = isFav(it.name);
+  // the star sits OUTSIDE the anchor so it is a real button, not a link-in-a-link
+  return `<div class="tilewrap">
+    <a class="tile${cls}" href="${href}"${ext}${sch}${id}>
+      <span class="body">
+        <span class="nm">${it.name}${badges}</span>
+        <span class="ds">${it.desc}</span>
+      </span>
+    </a>
+    <button type="button" class="star${fav ? ' on' : ''}" data-fav="${it.name.replace(/"/g,'&quot;')}"
+            aria-label="${fav ? 'Remove from' : 'Add to'} favorites"
+            aria-pressed="${fav}">${fav ? '★' : '☆'}</button>
+  </div>`;
+}
+
+/* ---------- favorites ---------- */
+const FAV_KEY = 'pfd-favs';
+function favs(){
+  try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (e) { return []; }
+}
+function isFav(name){ return favs().indexOf(name) !== -1; }
+function toggleFav(name){
+  const f = favs(), i = f.indexOf(name);
+  if (i === -1) f.push(name); else f.splice(i, 1);
+  localStorage.setItem(FAV_KEY, JSON.stringify(f));
+}
+function allItems(){
+  return LINKS.reduce((a, s) => a.concat(s.items), []);
 }
 
 function render(filter){
   const f = (filter || '').trim().toLowerCase();
   const out = document.getElementById('out');
   let html = '', hits = 0;
+
+  /* Favorites ride at the top, but only when you aren't searching —
+     during a search the results should be the whole answer. */
+  if (!f){
+    const items = favs()
+      .map(n => allItems().find(i => i.name === n))
+      .filter(Boolean);
+    if (items.length){
+      html += `<h2><svg viewBox="0 0 24 24" fill="currentColor">${ICONS.star}</svg>Favorites</h2>
+               <div class="tiles">${items.map(tileHTML).join('')}</div>`;
+    }
+  }
 
   LINKS.forEach(sec => {
     const items = f
@@ -358,10 +408,11 @@ function render(filter){
   mandoBlurb();
 }
 
-/* If a mando group has been picked, show its next date right on the tile. */
+/* If a mando group has been picked, show its next date right on the tile.
+   Uses querySelectorAll because the tile can also appear under Favorites. */
 function mandoBlurb(){
-  const tile = document.querySelector('a.tile[data-id="mando"]');
-  if (!tile || typeof mandoSessions !== 'function') return;
+  const tiles = document.querySelectorAll('a.tile[data-id="mando"]');
+  if (!tiles.length || typeof mandoSessions !== 'function') return;
   const v = localStorage.getItem('pfd-mando-group');
   if (!v || !/^[ABC][1-7]$/.test(v)) return;
 
@@ -378,10 +429,19 @@ function mandoBlurb(){
   const sameMonth = new Date(s.day1).getUTCMonth() === new Date(s.day2).getUTCMonth();
   const dates = f(s.day1, {month:'short', day:'numeric'}) + '–'
               + f(s.day2, sameMonth ? {day:'numeric'} : {month:'short', day:'numeric'});
-  tile.querySelector('.ds').textContent = `${v} · ${dates} · ${when}`;
+  tiles.forEach(t => { t.querySelector('.ds').textContent = `${v} · ${dates} · ${when}`; });
 }
 
 render();
+
+/* star taps toggle a favorite and re-render, keeping the search box as-is */
+document.addEventListener('click', e => {
+  const s = e.target.closest('.star');
+  if (!s) return;
+  e.preventDefault();
+  toggleFav(s.dataset.fav);
+  render(document.getElementById('q').value);
+});
 
 /* search */
 const q = document.getElementById('q');
