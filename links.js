@@ -135,7 +135,7 @@ const LINKS = [
   },
 
   {
-    category: "HR & Payroll",
+    category: "HR & Admin",
     accent: "47,127,224",
     icon: "badge",
     items: [
@@ -161,6 +161,11 @@ const LINKS = [
         name: "Lexipol",
         desc: "Policy manual",
         url: "https://policy.lexipol.com/"
+      },
+      {
+        name: "FR1 Training",
+        desc: "FireRescue1 Academy",
+        url: "https://olt.firerescue1academy.com/login/#login"
       },
       {
         name: "City Fire Page",
