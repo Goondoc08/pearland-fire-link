@@ -220,13 +220,18 @@ const LINKS = [
       },
       {
         name: "TCFP",
-        desc: "Texas Commission on Fire Protection",
-        url: "https://www.tcfp.texas.gov/"
+        desc: "TCFP FIdo login",
+        url: "https://auth.tcfp.texas.gov/account/login"
       },
       {
-        name: "TCFP Cert Lookup",
-        desc: "Check your certification status",
-        url: "https://www.tcfp.texas.gov/services/search-individual-department"
+        name: "NREMT",
+        desc: "National EMS certification",
+        url: "https://www.nremt.org/"
+      },
+      {
+        name: "TDSHS",
+        desc: "State EMS certification",
+        url: "https://vo.ras.dshs.state.tx.us/datamart/login.do"
       }
     ]
   },
@@ -245,7 +250,7 @@ const LINKS = [
         app: true
       },
       {
-        name: "IAFF Center of Excellence",
+        name: "Center of Excellence",
         desc: "Behavioral health treatment for members",
         url: "https://www.iaff.org/center-of-excellence/"
       },
