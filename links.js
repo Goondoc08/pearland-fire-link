@@ -59,6 +59,12 @@ const LINKS = [
         pinned: true
       },
       {
+        name: "Responder360",
+        desc: "Pre-plans & building info",
+        url: "https://app.responder360.com/",
+        pinned: true
+      },
+      {
         name: "ESO Suite",
         desc: "ePCR & reporting",
         url: "https://www.esosuite.net/Dashboard",
