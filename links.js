@@ -13,6 +13,12 @@
    Optional flags you can add to any link:
      offsite: true  -> shows an "Off City WiFi" badge (won't load on the station network)
      app:  true     -> shows an "App" badge (native app, not a website)
+     webOnly: true  -> shows a "Web Only" badge — there IS a native app for this,
+                       but nothing (confirmed scheme, verified App Link) exists
+                       for a web page to open it with, so this always opens the
+                       website even if the app is installed. Use this instead of
+                       silently doing nothing so people don't wonder why it
+                       didn't open their app.
      ios:  "url"    -> alternate URL used on iPhone/iPad
      android: "url" -> alternate URL used on Android
      scheme: "x://"       -> tries to open an installed app first (both platforms), then falls back to url
@@ -35,11 +41,34 @@ const LINKS = [
     icon: "siren",
     items: [
       {
+        // The old links all pointed at acidremap.com's marketing/download
+        // page (complete with a "redeem this promo code" wall) instead of
+        // the actual app — that's the bug that got reported.
+        //
+        // Android fix, confirmed real: found the exact package two ways
+        // (Play Store search + it matches the site's own bundleID param) —
+        // com.acidremap.PPPPearlandFD, a normal public Play Store listing
+        // titled "Pearland FD". Linking straight to it now.
+        //
+        // iOS has no fix available: checked the iTunes lookup API directly
+        // for that same bundle id (and the shorter variant) and got zero
+        // results both times — there is no public App Store listing for a
+        // Pearland-specific app. Acid Remap's iOS distribution goes through
+        // Apple's Custom Apps program (private, promo-code redemption),
+        // which is exactly what that download page's promo-code messaging
+        // was for. So for iOS, that page IS the correct destination, not a
+        // wrong link — left it as-is.
+        //
+        // No scheme attempted on either platform: the download page itself
+        // states outright that no custom URL scheme exists, and there's no
+        // assetlinks.json for Android App Links either. Nothing to hook a
+        // "try the app first" attempt onto — see the Pulsara entry for what
+        // guessing one anyway costs.
         name: "EMS Protocols",
         desc: "Pearland FD protocols (AcidRemap)",
-        url: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=iOS",
+        url: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
+        android: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
         ios: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=iOS",
-        android: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=android",
         pinned: true
       },
       {
@@ -78,6 +107,7 @@ const LINKS = [
         name: "Pulsara",
         desc: "Patient communication / alerts",
         url: "https://us-app.pulsara.com/user/login",
+        webOnly: true,
         pinned: true
       },
       {
