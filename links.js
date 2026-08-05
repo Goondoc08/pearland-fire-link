@@ -19,6 +19,11 @@
                        website even if the app is installed. Use this instead of
                        silently doing nothing so people don't wonder why it
                        didn't open their app.
+     store: true    -> shows a "Store" badge — this tile lands on the App Store /
+                       Play Store listing, not on the app itself. From there you
+                       tap "Open" to launch it. No web page can press that Open
+                       button for you (the OS blocks cross-app automation), so
+                       the badge sets the expectation instead of looking broken.
      ios:  "url"    -> alternate URL used on iPhone/iPad
      android: "url" -> alternate URL used on Android
      scheme: "x://"       -> tries to open an installed app first (both platforms), then falls back to url
@@ -69,6 +74,7 @@ const LINKS = [
         url: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
         android: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
         ios: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=iOS",
+        store: true,
         pinned: true
       },
       {
@@ -305,12 +311,26 @@ const LINKS = [
     icon: "heart",
     items: [
       {
+        // Same dead end as Pulsara, checked the same way: getmindbase.com
+        // 301s to versaterm.com (Versaterm acquired Mindbase), and NEITHER
+        // domain serves assetlinks.json or apple-app-site-association —
+        // both 404. So no App Links / Universal Links exist, and there's
+        // no published scheme. A tap can only reach the store listing.
+        //
+        // Store listings verified current, not stale: iTunes lookup on
+        // id1640085568 returns "Mindbase | Health and Wellness", bundle
+        // com.bac354442f26.app (matches the Android package exactly), last
+        // updated 2026-07-17 — actively maintained despite the acquisition.
+        //
+        // url: was getmindbase.com, which now just redirects to Versaterm's
+        // corporate homepage — a dead end for someone looking for wellness
+        // support. Pointed at the actual Mindbase product page instead.
         name: "Mindbase",
         desc: "Confidential first responder wellness",
-        url: "https://getmindbase.com/",
+        url: "https://www.versaterm.com/solution/mindbase/",
         ios: "https://apps.apple.com/us/app/mindbase-health-and-wellness/id1640085568",
         android: "https://play.google.com/store/apps/details?id=com.bac354442f26.app",
-        app: true
+        store: true
       },
       {
         name: "Center of Excellence",
