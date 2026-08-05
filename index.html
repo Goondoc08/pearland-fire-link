@@ -57,11 +57,11 @@
     color:var(--txt);font:inherit;text-align:left;cursor:pointer;
   }
   .shiftbar .lt{
-    font-size:22px;font-weight:800;line-height:1;width:26px;text-align:center;
+    font-size:24px;font-weight:800;line-height:1;width:28px;text-align:center;
   }
   .shiftbar .meta{flex:1;min-width:0}
-  .shiftbar .d1{font-size:13px;font-weight:600}
-  .shiftbar .d2{font-size:11.5px;color:var(--dim)}
+  .shiftbar .d1{font-size:14.5px;font-weight:600}
+  .shiftbar .d2{font-size:12.5px;color:var(--dim)}
   .shiftbar .chev{color:var(--faint);font-size:12px;transition:transform .18s}
   .shiftbar.open .chev{transform:rotate(180deg)}
   .sA{border-left-color:var(--a)} .sA .lt{color:var(--a)}
@@ -120,11 +120,11 @@
      turns muddy fast. */
   .sec{--acc:93,107,122}
   h2{
-    font-size:11px;letter-spacing:1.1px;text-transform:uppercase;
+    font-size:12.5px;letter-spacing:1.1px;text-transform:uppercase;
     color:rgb(var(--acc));
     margin:22px 0 9px;font-weight:700;display:flex;align-items:center;gap:7px;
   }
-  h2 svg{width:13px;height:13px;opacity:.9}
+  h2 svg{width:14px;height:14px;opacity:.9}
 
   /* Square-ish cards, name only — members know what their own tools are,
      so a subheading under every tile was explaining the obvious at the
@@ -138,9 +138,17 @@
 
   .tilewrap{position:relative}
   .star{
-    position:absolute;right:0;top:0;z-index:2;
-    background:none;border:0;color:var(--faint);font-size:17px;line-height:1;
-    padding:7px;cursor:pointer;border-radius:8px;font-family:inherit;
+    position:absolute;right:1px;top:1px;z-index:2;
+    background:none;border:0;color:var(--faint);font-size:16px;line-height:1;
+    padding:3px;cursor:pointer;border-radius:8px;font-family:inherit;
+  }
+  /* Tap target stays generous (~38x38) via an invisible expanded hit-slop,
+     independent of the visible box — so the star reads big and clickable
+     without its actual footprint crowding the centered tile name next to
+     it. Shrinking the visible padding instead of the hit-slop would have
+     made it LOOK small again, defeating the point of bumping it. */
+  .star::before{
+    content:"";position:absolute;inset:-7px;
   }
   .star:active{background:rgba(255,255,255,.1)}
   .star.on{color:#f0c063}
@@ -155,7 +163,10 @@
     aspect-ratio:1/.92;text-align:center;text-decoration:none;color:var(--txt);
     background:linear-gradient(rgba(var(--acc),.075),rgba(var(--acc),.075)),var(--panel);
     border:1px solid rgba(var(--acc),.20);border-radius:10px;
-    padding:6px 4px;transition:background .12s,border-color .12s;
+    /* extra top padding shifts the centered name's midpoint down a few px,
+       clear of the star's corner, without touching the bottom-pinned
+       tags/mando-date band */
+    padding:13px 4px 6px;transition:background .12s,border-color .12s;
   }
   a.tile:active{background:linear-gradient(rgba(var(--acc),.17),rgba(var(--acc),.17)),var(--panel)}
   @media(hover:hover){
@@ -164,14 +175,14 @@
       background:linear-gradient(rgba(var(--acc),.14),rgba(var(--acc),.14)),var(--panel);
     }
   }
-  .tile .nm{font-size:10.5px;font-weight:600;line-height:1.2;width:100%}
+  .tile .nm{font-size:12px;font-weight:600;line-height:1.14;width:100%}
   /* long names get 3 lines before truncating, so nothing reads blank */
   .tile .nmtxt{
     display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
     overflow:hidden;width:100%;
   }
   .tile .tags{
-    position:absolute;left:4px;right:4px;bottom:5px;z-index:1;
+    position:absolute;left:4px;right:4px;bottom:3px;z-index:1;
     display:flex;justify-content:center;flex-wrap:wrap;gap:3px;
   }
   /* Static description is hidden — it was restating what the tile already
@@ -184,16 +195,16 @@
      (a.tile[data-id="mando"] always exists, but a group may not be picked
      yet). The .hasdate class is the signal that it's real content. */
   a.tile[data-id="mando"].hasdate .ds{
-    display:block;position:absolute;left:4px;right:4px;bottom:5px;
-    font-size:8px;color:var(--dim);font-weight:500;
+    display:block;position:absolute;left:4px;right:4px;bottom:4px;
+    font-size:9px;color:var(--dim);font-weight:500;
   }
   .tile .go{display:none}
   .tile.urgent{border-color:#5a2320;background:#1d1413}
   .tile.urgent .nm{color:#ff7a70}
 
   .badge{
-    font-size:6.5px;letter-spacing:.3px;text-transform:uppercase;font-weight:700;
-    padding:1px 4px;border-radius:4px;white-space:nowrap;
+    font-size:7.5px;letter-spacing:.3px;text-transform:uppercase;font-weight:700;
+    padding:1.5px 5px;border-radius:4px;white-space:nowrap;
   }
   .b-wifi{background:#3a2f12;color:#e0b64a}
   .b-app{background:#12303a;color:#4ab6e0}
