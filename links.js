@@ -53,28 +53,31 @@ const LINKS = [
         pinned: true
       },
       {
-        // "pulsara://" (a guess) confirmed NOT to be a real scheme — it just
-        // silently fell through to the web login every time, after a dead
-        // 900ms wait. Replaced with something based on fact instead of a
-        // guess: Pulsara's real Android package is com.pulsara.stopapps
-        // (confirmed via its iOS apple-app-site-association file AND the
-        // Play Store listing independently). The intent: URL below launches
-        // that package directly by name — it doesn't need the app to
-        // register any web-link handling, so it works even though Pulsara's
-        // own universal-link config only covers /oauth2callback/*, not the
-        // login page we link to. Falls back to the web login if the app
-        // isn't installed.
-        //
-        // iOS gets no scheme: no real one is confirmed, and a wrong guess
-        // risks Safari's "address is invalid" alert. It just gets the plain
-        // web link. (For reference, if a real iOS scheme surfaces later:
-        // App Store id873184192 — "Pulsara: Medical Communication".)
+        // No auto-open for Pulsara on either platform. This isn't an
+        // unfinished attempt — it's a confirmed dead end:
+        //   - "pulsara://" (a guess) tested false: fell through to the web
+        //     login every time.
+        //   - Pulsara's own apple-app-site-association file only covers
+        //     /oauth2callback/*, not the login page we link to, so no plain
+        //     https link universal-links into the app here on any platform.
+        //   - An Android intent: URL launching com.pulsara.stopapps by
+        //     package (confirmed via both their iOS app-site-association
+        //     file and the Play Store listing) ALSO tested false on a real
+        //     device — landed on the web login every time, app never
+        //     opened. Root cause: Chrome only launches an app component via
+        //     intent: if its intent-filter declares category BROWSABLE,
+        //     specifically to stop web pages from launching arbitrary app
+        //     screens. A launcher icon's MAIN/LAUNCHER activity is not
+        //     BROWSABLE, so Chrome silently refuses — same behavior every
+        //     time, not a syntax bug.
+        // Bottom line: Pulsara hasn't published anything (scheme, verified
+        // App Link covering this path, or a BROWSABLE activity) that a web
+        // page can hook into. If that changes, revisit; until then this is
+        // a plain link, same as any non-app tile. (For reference: iOS App
+        // Store id873184192 — "Pulsara: Medical Communication".)
         name: "Pulsara",
         desc: "Patient communication / alerts",
         url: "https://us-app.pulsara.com/user/login",
-        androidScheme: "intent:#Intent;action=android.intent.action.MAIN;"
-          + "category=android.intent.category.LAUNCHER;package=com.pulsara.stopapps;"
-          + "S.browser_fallback_url=https%3A%2F%2Fus-app.pulsara.com%2Fuser%2Flogin;end",
         pinned: true
       },
       {
