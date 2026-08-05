@@ -46,38 +46,6 @@ const LINKS = [
     icon: "siren",
     items: [
       {
-        // The old links all pointed at acidremap.com's marketing/download
-        // page (complete with a "redeem this promo code" wall) instead of
-        // the actual app — that's the bug that got reported.
-        //
-        // Android fix, confirmed real: found the exact package two ways
-        // (Play Store search + it matches the site's own bundleID param) —
-        // com.acidremap.PPPPearlandFD, a normal public Play Store listing
-        // titled "Pearland FD". Linking straight to it now.
-        //
-        // iOS has no fix available: checked the iTunes lookup API directly
-        // for that same bundle id (and the shorter variant) and got zero
-        // results both times — there is no public App Store listing for a
-        // Pearland-specific app. Acid Remap's iOS distribution goes through
-        // Apple's Custom Apps program (private, promo-code redemption),
-        // which is exactly what that download page's promo-code messaging
-        // was for. So for iOS, that page IS the correct destination, not a
-        // wrong link — left it as-is.
-        //
-        // No scheme attempted on either platform: the download page itself
-        // states outright that no custom URL scheme exists, and there's no
-        // assetlinks.json for Android App Links either. Nothing to hook a
-        // "try the app first" attempt onto — see the Pulsara entry for what
-        // guessing one anyway costs.
-        name: "EMS Protocols",
-        desc: "Pearland FD protocols (AcidRemap)",
-        url: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
-        android: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
-        ios: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=iOS",
-        store: true,
-        pinned: true
-      },
-      {
         name: "Handtevy",
         desc: "Pediatric dosing — opens installed app",
         url: "https://handtevy.com/",
@@ -133,6 +101,39 @@ const LINKS = [
         desc: "Apparatus & equipment checkoffs",
         url: "https://app1.pstrax.com/sso-login.php",
         pinned: true
+      },
+      {
+        // Handtevy is the preferred app and already carries protocols, so
+        // this trails behind it rather than leading the section. The old
+        // links all pointed at acidremap.com's marketing/download page
+        // (complete with a "redeem this promo code" wall) instead of the
+        // actual app — that's the bug that got reported.
+        //
+        // Android fix, confirmed real: found the exact package two ways
+        // (Play Store search + it matches the site's own bundleID param) —
+        // com.acidremap.PPPPearlandFD, a normal public Play Store listing
+        // titled "Pearland FD". Linking straight to it now.
+        //
+        // iOS has no fix available: checked the iTunes lookup API directly
+        // for that same bundle id (and the shorter variant) and got zero
+        // results both times — there is no public App Store listing for a
+        // Pearland-specific app. Acid Remap's iOS distribution goes through
+        // Apple's Custom Apps program (private, promo-code redemption),
+        // which is exactly what that download page's promo-code messaging
+        // was for. So for iOS, that page IS the correct destination, not a
+        // wrong link — left it as-is.
+        //
+        // No scheme attempted on either platform: the download page itself
+        // states outright that no custom URL scheme exists, and there's no
+        // assetlinks.json for Android App Links either. Nothing to hook a
+        // "try the app first" attempt onto — see the Pulsara entry for what
+        // guessing one anyway costs.
+        name: "EMS Protocols",
+        desc: "Pearland FD protocols (AcidRemap)",
+        url: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
+        android: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
+        ios: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=iOS",
+        store: true
       }
     ]
   },
