@@ -339,9 +339,12 @@ const LINKS = [
         url: "https://www.iaff.org/center-of-excellence/"
       },
       {
+        // Deliberately NOT a tel: link. A one-tap dial is an easy accident
+        // in a pocket, and phone isn't the only way in anyway — this page
+        // lists call, text, and chat as separate, equally real options.
         name: "988 Lifeline",
-        desc: "Suicide & Crisis Lifeline — call or text 988",
-        url: "tel:988",
+        desc: "Call, text, or chat — Suicide & Crisis Lifeline",
+        url: "https://988lifeline.org/get-help/",
         urgent: true
       }
       // Deliberately NOT listing individual peer support members' phone
