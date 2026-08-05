@@ -27,7 +27,8 @@
     padding-bottom:env(safe-area-inset-bottom);
     overscroll-behavior-y:contain;
   }
-  .wrap{max-width:760px;margin:0 auto;padding:0 14px 60px}
+  /* bottom padding clears the floating share button */
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px 96px}
 
   /* ---------- header ---------- */
   header{
@@ -161,6 +162,58 @@
 
   .empty{text-align:center;color:var(--faint);font-size:14px;padding:40px 0}
 
+  /* ---------- share button ----------
+     Installed PWAs have no address bar, so there is no other way to get
+     the link out to someone. */
+  .fab{
+    position:fixed; right:16px; z-index:30;
+    bottom:calc(env(safe-area-inset-bottom) + 16px);
+    width:54px; height:54px; border-radius:50%;
+    background:var(--red); border:0; color:#fff; cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.45);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .fab:active{transform:scale(.94)}
+  .fab svg{width:23px;height:23px}
+
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%) translateY(14px);
+    bottom:calc(env(safe-area-inset-bottom) + 82px); z-index:40;
+    background:#e8edf3; color:#0f1216; font-size:13.5px; font-weight:600;
+    padding:9px 16px; border-radius:20px; opacity:0; pointer-events:none;
+    transition:opacity .18s, transform .18s; max-width:88vw; text-align:center;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ---------- install sheet ---------- */
+  .sheetwrap{
+    position:fixed; inset:0; z-index:50; background:rgba(0,0,0,.6);
+    display:flex; align-items:flex-end; justify-content:center;
+    padding:14px; padding-bottom:calc(env(safe-area-inset-bottom) + 14px);
+  }
+  .sheetwrap[hidden]{display:none}
+  .isheet{
+    background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    padding:18px 18px 15px; max-width:420px; width:100%;
+  }
+  .isheet .top{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .isheet img{width:46px;height:46px;border-radius:11px;flex:0 0 auto}
+  .isheet h3{margin:0;font-size:16.5px;font-weight:700}
+  .isheet .sub{font-size:12.5px;color:var(--dim);margin-top:2px}
+  .isheet ol{margin:0 0 14px;padding-left:20px;color:#cfd8e2;font-size:14px;line-height:1.75}
+  .isheet ol b{color:var(--txt)}
+  .isheet .ic{
+    display:inline-flex;vertical-align:-4px;margin:0 2px;
+    width:17px;height:17px;color:#7fb0ff;
+  }
+  .isheet .btns{display:flex;gap:9px}
+  .isheet button{
+    flex:1; padding:12px 0; border-radius:11px; font:600 15px inherit;
+    font-family:inherit; cursor:pointer; border:1px solid var(--line);
+    background:var(--panel2); color:var(--txt);
+  }
+  .isheet button.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+
   /* ---------- footer ---------- */
   footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.6}
   footer a{color:var(--dim)}
@@ -233,8 +286,36 @@
     </div>
     Links last reviewed <span id="lastup"></span>.<br>
     Broken link or something missing?
-    <a id="report" href="#">Report it</a>.
+    <a id="report" href="#">Report it</a>.<br>
+    <a id="howto" href="#">Add to home screen</a>
   </footer>
+</div>
+
+<button class="fab" id="fab" aria-label="Share this app">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+    <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>
+  </svg>
+</button>
+
+<div class="toast" id="toast"></div>
+
+<div class="sheetwrap" id="sheetwrap" hidden>
+  <div class="isheet" role="dialog" aria-modal="true" aria-labelledby="ish-h">
+    <div class="top">
+      <img src="icon-192.png" alt="">
+      <div>
+        <h3 id="ish-h">Add to your home screen</h3>
+        <div class="sub">Opens like an app — full screen, and works with no signal.</div>
+      </div>
+    </div>
+    <ol id="ish-steps"></ol>
+    <div class="btns">
+      <button id="ish-install" class="primary" hidden>Install</button>
+      <button id="ish-close">Got it</button>
+    </div>
+  </div>
 </div>
 
 <script src="shift.js"></script>
@@ -481,6 +562,110 @@ document.getElementById('report').href =
   'mailto:nicholas.matula@gmail.com?subject=' +
   encodeURIComponent('Pearland Fire Link — broken link') +
   '&body=' + encodeURIComponent('Which link:\n\nWhat happened:\n\n');
+
+/* ============================================================
+   SHARE
+   Installed PWAs have no address bar, so this is the only way to
+   pass the link on. Uses the native share sheet where it exists,
+   falls back to copying.
+   ============================================================ */
+const APP_URL = new URL('./', location.href).href;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+document.getElementById('fab').onclick = async () => {
+  const data = { title: 'Pearland Fire Link', text: 'Pearland FD quick links', url: APP_URL };
+  if (navigator.share){
+    try { await navigator.share(data); return; }
+    catch (e) { if (e && e.name === 'AbortError') return; }   // user cancelled
+  }
+  try { await navigator.clipboard.writeText(APP_URL); toast('Link copied'); }
+  catch (e) { toast(APP_URL); }
+};
+
+/* ============================================================
+   INSTALL SHEET
+   Shown once to anyone not already running it installed. Android
+   and desktop Chrome hand us a real install prompt; iOS has no
+   such API, so it gets instructions instead.
+   ============================================================ */
+const SEEN_KEY = 'pfd-install-seen';
+let deferredPrompt = null;
+
+function isInstalled(){
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+
+function installSteps(){
+  const ios = IS_IOS;
+  const btn = document.getElementById('ish-install');
+  const shareGlyph = `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 16V4"/><path d="M8 8l4-4 4 4"/><path d="M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg>`;
+  const menuGlyph = `<svg class="ic" viewBox="0 0 24 24" fill="currentColor">
+      <circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>`;
+
+  if (deferredPrompt){
+    btn.hidden = false;
+    return `<li>Tap <b>Install</b> below.</li>
+            <li>Confirm, and it lands on your home screen.</li>`;
+  }
+  btn.hidden = true;
+  if (ios){
+    return `<li>Tap the <b>Share</b> button ${shareGlyph} at the bottom of Safari.</li>
+            <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+            <li>Tap <b>Add</b>.</li>`;
+  }
+  return `<li>Tap the <b>menu</b> ${menuGlyph} at the top right of Chrome.</li>
+          <li>Tap <b>Add to Home screen</b> (or <b>Install app</b>).</li>
+          <li>Confirm.</li>`;
+}
+
+function openSheet(){
+  document.getElementById('ish-steps').innerHTML = installSteps();
+  document.getElementById('sheetwrap').hidden = false;
+}
+function closeSheet(){
+  document.getElementById('sheetwrap').hidden = true;
+  localStorage.setItem(SEEN_KEY, '1');
+}
+
+document.getElementById('ish-close').onclick = closeSheet;
+document.getElementById('sheetwrap').onclick = e => {
+  if (e.target.id === 'sheetwrap') closeSheet();     // tap the backdrop
+};
+document.getElementById('ish-install').onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  closeSheet();
+};
+/* footer link re-opens it after it has been dismissed */
+document.getElementById('howto').onclick = e => { e.preventDefault(); openSheet(); };
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // if the sheet is already up, upgrade it to a real Install button
+  if (!document.getElementById('sheetwrap').hidden) openSheet();
+});
+window.addEventListener('appinstalled', () => {
+  localStorage.setItem(SEEN_KEY, '1');
+  deferredPrompt = null;
+});
+
+/* Show once, and only to people who could actually act on it. */
+if (!isInstalled() && !localStorage.getItem(SEEN_KEY) && (IS_IOS || IS_ANDROID)){
+  setTimeout(openSheet, 1200);
+}
 
 /* service worker */
 if ('serviceWorker' in navigator) {
