@@ -71,11 +71,6 @@ const LINKS = [
         pinned: true
       },
       {
-        name: "Policy Manual",
-        desc: "Lexipol policy manual",
-        url: "https://policy.lexipol.com/"
-      },
-      {
         name: "FEMA ICS Forms",
         desc: "Downloadable ICS forms 201–215A",
         url: "https://training.fema.gov/emiweb/is/icsresource/icsforms/"
@@ -101,7 +96,7 @@ const LINKS = [
         pinned: true
       },
       {
-        name: "Daily & Weekly Duties",
+        name: "Station Duties",
         desc: "Tour tasks and the weekly rotation",
         url: "duties.html",
         pinned: true
@@ -132,7 +127,7 @@ const LINKS = [
         url: "fire-districts.pdf"
       },
       {
-        name: "TranStar Road Closures",
+        name: "TranStar Closures",
         desc: "Houston-area closures & traffic",
         url: "https://traffic.houstontranstar.org/roadclosures/"
       }
@@ -161,6 +156,11 @@ const LINKS = [
         name: "Uniform Portal",
         desc: "GYC uniform ordering",
         url: "https://pearlandfd.b2bbuyersecure.com/?redirectURL=https://pearlandfd.gycuniforms.com/"
+      },
+      {
+        name: "Lexipol",
+        desc: "Policy manual",
+        url: "https://policy.lexipol.com/"
       },
       {
         name: "City Fire Page",
