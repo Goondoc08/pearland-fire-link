@@ -343,9 +343,10 @@ const LINKS = [
         url: "tel:988",
         urgent: true
       }
-      // Peer support contacts go here once the internal numbers are gathered.
-      // Use "tel:" URLs so they dial straight from the tile, e.g.:
-      //   { name: "Peer Support — J. Doe", desc: "Peer support team", url: "tel:2815550100" }
+      // Deliberately NOT listing individual peer support members' phone
+      // numbers here. This site is public — anything added to this file is
+      // readable by anyone who finds the URL. Those contacts live behind the
+      // Mindbase login, which is the right place for them. Don't add them.
     ]
   }
 ];
