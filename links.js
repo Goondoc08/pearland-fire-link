@@ -15,7 +15,13 @@
      app:  true     -> shows an "App" badge (native app, not a website)
      ios:  "url"    -> alternate URL used on iPhone/iPad
      android: "url" -> alternate URL used on Android
-     scheme: "x://" -> tries to open an installed app first, then falls back to url
+     scheme: "x://"       -> tries to open an installed app first (both platforms), then falls back to url
+     androidScheme: "..." -> same, but Android only (use when the iOS scheme is different or unknown)
+     iosScheme: "..."     -> same, but iOS only
+     Only add a scheme if you've actually confirmed it opens the app — a wrong
+     guess wastes ~1s before falling back, and on iOS can pop an "address is
+     invalid" alert. See the Pulsara entry below for how to build a reliable
+     Android one from just the app's Play Store package name.
 
    After editing: save, commit, push. That's it.
    ============================================================ */
@@ -47,15 +53,28 @@ const LINKS = [
         pinned: true
       },
       {
-        // NOTE: "pulsara://" is a guess — unlike Handtevy, Pulsara's URL
-        // scheme isn't publicly documented. The fallback means a wrong guess
-        // still lands on the web login, but if an iPhone throws an "address
-        // is invalid" alert, just delete the scheme line below.
+        // "pulsara://" (a guess) confirmed NOT to be a real scheme — it just
+        // silently fell through to the web login every time, after a dead
+        // 900ms wait. Replaced with something based on fact instead of a
+        // guess: Pulsara's real Android package is com.pulsara.stopapps
+        // (confirmed via its iOS apple-app-site-association file AND the
+        // Play Store listing independently). The intent: URL below launches
+        // that package directly by name — it doesn't need the app to
+        // register any web-link handling, so it works even though Pulsara's
+        // own universal-link config only covers /oauth2callback/*, not the
+        // login page we link to. Falls back to the web login if the app
+        // isn't installed.
+        //
+        // iOS gets no scheme: no real one is confirmed, and a wrong guess
+        // risks Safari's "address is invalid" alert. It just gets the plain
+        // web link. (For reference, if a real iOS scheme surfaces later:
+        // App Store id873184192 — "Pulsara: Medical Communication".)
         name: "Pulsara",
         desc: "Patient communication / alerts",
         url: "https://us-app.pulsara.com/user/login",
-        scheme: "pulsara://",
-        app: true,
+        androidScheme: "intent:#Intent;action=android.intent.action.MAIN;"
+          + "category=android.intent.category.LAUNCHER;package=com.pulsara.stopapps;"
+          + "S.browser_fallback_url=https%3A%2F%2Fus-app.pulsara.com%2Fuser%2Flogin;end",
         pinned: true
       },
       {

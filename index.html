@@ -454,7 +454,11 @@ function tileHTML(it){
   // local pages stay in the app; everything else opens out
   const local = !/^(https?:|tel:)/.test(href);
   const ext  = (href.startsWith('tel:') || local) ? '' : ' target="_blank" rel="noopener noreferrer"';
-  const sch  = it.scheme ? ` data-scheme="${it.scheme}"` : '';
+  // Platform-specific scheme wins when set (e.g. an Android intent:// URL
+  // that would be nonsense on iOS); falls back to the shared "scheme" field
+  // for links like Handtevy where one scheme works on both platforms.
+  const schVal = (IS_ANDROID && it.androidScheme) || (IS_IOS && it.iosScheme) || it.scheme;
+  const sch  = schVal ? ` data-scheme="${schVal}"` : '';
   const cls  = it.urgent ? ' urgent' : '';
   const id   = it.id ? ` data-id="${it.id}"` : '';
   const fav  = isFav(it.name);
