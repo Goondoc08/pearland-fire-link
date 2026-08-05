@@ -133,11 +133,6 @@ const LINKS = [
         desc: "Apparatus & equipment checkoffs",
         url: "https://app1.pstrax.com/sso-login.php",
         pinned: true
-      },
-      {
-        name: "FEMA ICS Forms",
-        desc: "Downloadable ICS forms 201–215A",
-        url: "https://training.fema.gov/emiweb/is/icsresource/icsforms/"
       }
     ]
   },
@@ -176,6 +171,11 @@ const LINKS = [
         name: "Engine Advisory Board",
         desc: "Submit EAB feedback",
         url: "https://forms.office.com/g/S91bHTgu4B"
+      },
+      {
+        name: "FEMA ICS Forms",
+        desc: "Downloadable ICS forms 201–215A",
+        url: "https://training.fema.gov/emiweb/is/icsresource/icsforms/"
       }
     ]
   },

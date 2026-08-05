@@ -16,7 +16,7 @@
     --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
     --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
     --red:#e0362c; --a:#e0362c; --b:#2f7fe0; --c:#3aa85f;
-    --amber:#e0a52c;
+    --amber:#e0a52c; --info:#e0873a;
     --r:14px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -39,6 +39,15 @@
   .hdr-in{max-width:760px;margin:0 auto}
   .brand{display:flex;align-items:center;gap:9px;margin-bottom:10px}
   .brandmark{width:26px;height:26px;flex:0 0 auto;border-radius:7px;display:block}
+  .infobtn{
+    margin-left:auto;flex:0 0 auto;
+    width:28px;height:28px;border-radius:50%;
+    background:none;border:1.6px solid var(--info);color:var(--info);
+    font:italic 700 15px/1 Georgia,"Times New Roman",serif;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    padding:0 0 1px 0;
+  }
+  .infobtn:active{background:rgba(224,135,58,.16)}
   .brand h1{font-size:17px;font-weight:700;letter-spacing:.2px;margin:0}
   /* shift bar */
   .shiftbar{
@@ -245,6 +254,39 @@
   }
   .isheet button.primary{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
 
+  /* ---------- FAQ sheet ---------- */
+  .faq{max-height:82vh;display:flex;flex-direction:column;padding:0}
+  .faqhead{
+    display:flex;align-items:center;gap:10px;flex:0 0 auto;
+    padding:15px 16px 12px;border-bottom:1px solid var(--line);
+  }
+  .faqhead h3{margin:0;font-size:16px;font-weight:700;flex:1}
+  .faqhead .ic{width:22px;height:22px;color:var(--info);flex:0 0 auto}
+  .faqhead button{
+    background:none;border:0;color:var(--dim);font-size:24px;line-height:1;
+    padding:2px 6px;cursor:pointer;font-family:inherit;
+  }
+  .faqbody{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 16px 16px}
+  .faqbody h4{
+    font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;
+    color:var(--info);margin:18px 0 8px;
+  }
+  .faqbody h4:first-child{margin-top:14px}
+  .faqbody dl{margin:0}
+  .faqbody dt{font-size:13.5px;font-weight:650;color:var(--txt);margin-top:11px}
+  .faqbody dt:first-child{margin-top:0}
+  .faqbody dd{margin:3px 0 0;font-size:12.5px;color:var(--dim);line-height:1.55}
+  .faqbody dd b{color:#c3ccd6}
+  .faqbody .tag{
+    display:inline-block;font-size:8px;letter-spacing:.3px;text-transform:uppercase;
+    font-weight:700;padding:1px 5px;border-radius:4px;vertical-align:1px;
+  }
+  .faqfoot{
+    flex:0 0 auto;border-top:1px solid var(--line);padding:11px 16px;
+    font-size:11.5px;color:var(--faint);line-height:1.55;
+  }
+  .faqfoot a{color:var(--dim)}
+
   /* ---------- footer ---------- */
   footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--faint);line-height:1.6}
   footer a{color:var(--dim)}
@@ -262,6 +304,8 @@
     <div class="brand">
       <img src="icon-192.png" alt="" class="brandmark">
       <h1>Pearland Fire Link</h1>
+      <button class="infobtn" id="infobtn" type="button"
+              aria-label="Tips and known limitations">i</button>
     </div>
 
     <button class="shiftbar" id="shiftbar" aria-expanded="false">
@@ -327,6 +371,96 @@
 </button>
 
 <div class="toast" id="toast"></div>
+
+<div class="sheetwrap" id="faqwrap" hidden>
+  <div class="isheet faq" role="dialog" aria-modal="true" aria-labelledby="faq-h">
+    <div class="faqhead">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>
+      </svg>
+      <h3 id="faq-h">Tips &amp; Known Limits</h3>
+      <button id="faq-x" type="button" aria-label="Close">×</button>
+    </div>
+
+    <div class="faqbody">
+
+      <h4>Helpful tips</h4>
+      <dl>
+        <dt>Pulsara looks zoomed in / cut off</dt>
+        <dd>The web version renders large on a phone. Pinch to zoom out, or in Chrome
+            tap <b>⋮ → Settings → Accessibility</b> and lower <b>Text scaling</b>;
+            on iPhone tap <b>ᴀA</b> in the address bar and pick a smaller zoom.
+            The setting sticks for that site.</dd>
+
+        <dt>Install it to your home screen</dt>
+        <dd>Runs full screen with no address bar, and works with no signal.
+            See <b>Add to home screen</b> at the bottom of the page.</dd>
+
+        <dt>Star what you use</dt>
+        <dd>Tap the ☆ on any tile to pin it to a <b>Favorites</b> row at the top.
+            Saved on your phone only — everyone's is their own.</dd>
+
+        <dt>Set your mando group once</dt>
+        <dd>Open <b>Mando Schedule</b> and pick your group. After that your next
+            dates show on the tile, and your days highlight amber in the calendar.</dd>
+
+        <dt>Tap the shift bar</dt>
+        <dd>The date bar at the top opens a month calendar — shift letter per day,
+            plus the mando group scheduled that day.</dd>
+
+        <dt>It works with no signal</dt>
+        <dd>Once you've opened it, the flow chart, station duties, mando schedule
+            and district map all stay available offline.</dd>
+      </dl>
+
+      <h4>Known limits</h4>
+      <dl>
+        <dt>Search only covers tile names</dt>
+        <dd>It matches link names and descriptions, <b>not the text inside pages</b>.
+            Searching "sock hood" won't jump into Station Duties. No typo
+            tolerance either — "hantevy" finds nothing.</dd>
+
+        <dt><span class="tag b-web">Web Only</span> tiles won't open the app</dt>
+        <dd>Pulsara opens the website even if the app is installed. Nothing on this
+            page can change that — those apps haven't published the hooks
+            (App Links) that let a web page hand off to them. Verified, not
+            assumed.</dd>
+
+        <dt><span class="tag b-store">Store</span> tiles land on the store page</dt>
+        <dd>Mindbase and EMS Protocols open the App Store / Play Store listing —
+            tap <b>Open</b> there to launch the app. A web page can't press that
+            button for you; the phone blocks apps from driving each other.</dd>
+
+        <dt>EMS Protocols on iPhone</dt>
+        <dd>There's no public App Store listing for the Pearland build — Apple
+            distributes it privately by promo code, so the tile goes to AcidRemap's
+            download page. That's the only route Apple allows.</dd>
+
+        <dt><span class="tag b-wifi">Off City WiFi</span> on HR Suite</dt>
+        <dd>HR Suite won't load on the station network. Use cell data.</dd>
+      </dl>
+
+      <h4>Being looked at</h4>
+      <dl>
+        <dt>Opening Pulsara &amp; Mindbase directly</dt>
+        <dd>Ready to wire up the moment either vendor publishes proper app links.
+            Re-checked periodically rather than guessed at.</dd>
+
+        <dt>Peer support contacts</dt>
+        <dd>Internal numbers will be added under Wellness &amp; Support so they
+            dial straight from a tile.</dd>
+      </dl>
+
+    </div>
+
+    <div class="faqfoot">
+      <b>Unofficial.</b> Every tile links out to the official source — nothing is
+      hosted or copied here. Something wrong or missing?
+      <a id="faq-report" href="#">Send it over</a>.
+    </div>
+  </div>
+</div>
 
 <div class="sheetwrap" id="sheetwrap" hidden>
   <div class="isheet" role="dialog" aria-modal="true" aria-labelledby="ish-h">
@@ -589,10 +723,27 @@ document.addEventListener('click', e => {
 /* footer */
 document.getElementById('lastup').textContent =
   new Date(LAST_UPDATED + 'T12:00:00').toLocaleDateString(undefined, {month:'long', day:'numeric', year:'numeric'});
-document.getElementById('report').href =
+const REPORT_HREF =
   'mailto:nicholas.matula@gmail.com?subject=' +
   encodeURIComponent('Pearland Fire Link — broken link') +
   '&body=' + encodeURIComponent('Which link:\n\nWhat happened:\n\n');
+document.getElementById('report').href = REPORT_HREF;
+document.getElementById('faq-report').href = REPORT_HREF;
+
+/* ---------- FAQ sheet ---------- */
+const faqWrap = document.getElementById('faqwrap');
+function openFaq(){
+  faqWrap.hidden = false;
+  faqWrap.querySelector('.faqbody').scrollTop = 0;   // always start at the top
+}
+function closeFaq(){ faqWrap.hidden = true; }
+
+document.getElementById('infobtn').onclick = openFaq;
+document.getElementById('faq-x').onclick   = closeFaq;
+faqWrap.onclick = e => { if (e.target === faqWrap) closeFaq(); };   // backdrop tap
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !faqWrap.hidden) closeFaq();
+});
 
 /* ============================================================
    SHARE
