@@ -128,7 +128,7 @@ const LINKS = [
     items: [
       {
         name: "Fire Districts",
-        desc: "District boundaries — reference for reports",
+        desc: "District boundaries",
         url: "fire-districts.pdf"
       },
       {
@@ -152,7 +152,7 @@ const LINKS = [
       },
       {
         name: "HR Suite",
-        desc: "Timesheets, leave, personnel",
+        desc: "Paychecks, accruals",
         url: "https://myhr.pearlandtx.gov/Websites.HR.Portal/Default.aspx",
         offsite: true,
         pinned: true
@@ -189,6 +189,11 @@ const LINKS = [
         name: "457(b) / IRAs",
         desc: "MissionSquare supplemental retirement",
         url: "https://accountaccess.missionsq.org/login.html"
+      },
+      {
+        name: "FSA Portal",
+        desc: "WEX Health flexible spending",
+        url: "https://benefitslogin.wexhealth.com/Login.aspx"
       },
       {
         name: "NFPA Physicals",

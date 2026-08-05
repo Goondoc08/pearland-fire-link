@@ -65,7 +65,15 @@
   .sC{border-left-color:var(--c)} .sC .lt{color:var(--c)}
 
   /* search */
-  .search{position:relative}
+  .searchrow{display:flex;gap:8px}
+  .search{position:relative;flex:1}
+  .densebtn{
+    flex:0 0 auto;width:44px;height:44px;border-radius:10px;
+    background:var(--panel);border:1px solid var(--line);color:var(--dim);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .densebtn svg{width:18px;height:18px}
+  .densebtn.on{background:var(--panel2);border-color:var(--faint);color:var(--txt)}
   .search input{
     width:100%;background:var(--panel);border:1px solid var(--line);
     border-radius:10px;padding:11px 36px 11px 36px;color:var(--txt);font-size:16px;
@@ -123,6 +131,28 @@
   h2 svg{width:13px;height:13px;opacity:.9}
   .tiles{display:grid;grid-template-columns:1fr;gap:7px}
   @media(min-width:540px){.tiles{grid-template-columns:1fr 1fr}}
+
+  /* ---------- block density (compact 2-col cards) ----------
+     Not square — a square card in 2 columns is TALLER per row than a
+     full-width single-line tile, which increases scroll, not reduces it.
+     What actually saves vertical space is narrower cards with tight
+     padding and a name/description that can wrap to two lines instead
+     of forcing height. */
+  body.block .tiles{grid-template-columns:1fr 1fr;gap:7px}
+  @media(min-width:540px){body.block .tiles{grid-template-columns:1fr 1fr 1fr}}
+  body.block a.tile{
+    flex-direction:column; align-items:flex-start; justify-content:center;
+    padding:10px 30px 10px 11px; gap:0; min-height:0;
+  }
+  body.block .tile .body{width:100%}
+  body.block .tile .nm{font-size:13.5px;line-height:1.25}
+  body.block .tile .ds{
+    white-space:normal; -webkit-line-clamp:1; display:-webkit-box;
+    -webkit-box-orient:vertical; overflow:hidden; margin-top:2px; font-size:11px;
+  }
+  body.block .tile .go{display:none}
+  body.block .star{right:1px;top:1px;transform:none;padding:8px}
+  body.block .badge{font-size:8px;padding:1px 5px}
 
   .tilewrap{position:relative}
   .star{
@@ -246,12 +276,21 @@
       <span class="chev">▼</span>
     </button>
 
-    <div class="search">
-      <span class="mag">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
-      </span>
-      <input id="q" type="search" placeholder="Search links…" autocomplete="off" autocorrect="off" spellcheck="false">
-      <button class="clr" id="clr" aria-label="Clear">×</button>
+    <div class="searchrow">
+      <div class="search">
+        <span class="mag">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+        </span>
+        <input id="q" type="search" placeholder="Search links…" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="clr" id="clr" aria-label="Clear">×</button>
+      </div>
+      <!-- PREVIEW ONLY: layout toggle. Remove once a layout is picked. -->
+      <button class="densebtn" id="densebtn" type="button" title="Toggle layout (preview)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+      </button>
     </div>
   </div>
 </header>
@@ -540,6 +579,13 @@ document.addEventListener('click', e => {
 const q = document.getElementById('q');
 q.addEventListener('input', () => render(q.value));
 document.getElementById('clr').onclick = () => { q.value = ''; render(); q.focus(); };
+
+/* PREVIEW ONLY: block-layout toggle, not persisted. Remove with the button
+   above once a layout is picked. */
+document.getElementById('densebtn').onclick = () => {
+  const on = document.body.classList.toggle('block');
+  document.getElementById('densebtn').classList.toggle('on', on);
+};
 
 /* Try to open an installed app first (Handtevy et al.), fall back to the
    store/web URL if nothing handles the scheme within a beat. */
