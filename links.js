@@ -228,6 +228,16 @@ const LINKS = [
         pinned: true
       },
       {
+        name: "IT Helpdesk",
+        desc: "Submit a support ticket",
+        url: "https://helpdesk.pearlandtx.gov/support/home"
+      },
+      {
+        name: "Facilities Request",
+        desc: "Public Works facilities request form",
+        url: "https://pearlandtx.sharepoint.com/sites/PublicWorks/SitePages/Facilities-Request-Form.aspx"
+      },
+      {
         name: "Uniform Portal",
         desc: "GYC uniform ordering",
         url: "https://pearlandfd.b2bbuyersecure.com/?redirectURL=https://pearlandfd.gycuniforms.com/"
