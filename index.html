@@ -276,6 +276,13 @@
   .isheet .sub{font-size:12.5px;color:var(--dim);margin-top:2px}
   .isheet ol{margin:0 0 14px;padding-left:20px;color:#cfd8e2;font-size:14px;line-height:1.75}
   .isheet ol b{color:var(--txt)}
+  /* Two quick orientation tips below the install steps — not part of
+     installing itself, so a separate block rather than more <ol> items
+     pretending to be sequential steps. */
+  .isheet .tips{margin:0 0 14px;padding-top:12px;border-top:1px solid var(--line)}
+  .isheet .tips p{margin:0 0 8px;color:#cfd8e2;font-size:13px;line-height:1.55}
+  .isheet .tips p:last-child{margin-bottom:0}
+  .isheet .tips b{color:var(--txt)}
   .isheet .ic{
     display:inline-flex;vertical-align:-4px;margin:0 2px;
     width:17px;height:17px;color:#7fb0ff;
@@ -498,6 +505,11 @@
       </div>
     </div>
     <ol id="ish-steps"></ol>
+    <div class="tips">
+      <p><b>Set your mando group</b> — open <b>Mando Schedule</b> and pick yours once.
+      Your next dates and calendar highlights follow automatically after that.</p>
+      <p>Tap the <b>i</b> button up top any time for tips and known limits.</p>
+    </div>
     <div class="btns">
       <button id="ish-install" class="primary" hidden>Install</button>
       <button id="ish-close">Got it</button>
