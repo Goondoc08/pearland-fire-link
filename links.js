@@ -160,6 +160,12 @@ const LINKS = [
         pinned: true
       },
       {
+        name: "Live Fire Vitals",
+        desc: "Vitals log for live fire evolutions",
+        url: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=jKLimMbeYkavgqyuOCdWegsZ1CGuolhJs1kMw31341ZUMVdXMlVXVkJBMjJEV041UTFPNERXNkg3Qy4u",
+        pinned: true
+      },
+      {
         name: "PPE Flow Chart",
         desc: "Inspection & advanced cleaning steps",
         url: "flowchart.html",
