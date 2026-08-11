@@ -501,7 +501,7 @@
       <img src="icon-192.png" alt="">
       <div>
         <h3 id="ish-h">Add to your home screen</h3>
-        <div class="sub">Opens like an app — full screen, and works with no signal.</div>
+        <div class="sub" id="ish-sub">Opens like an app — full screen, and works with no signal.</div>
       </div>
     </div>
     <ol id="ish-steps"></ol>
@@ -816,6 +816,11 @@ document.getElementById('fab').onclick = async () => {
    such API, so it gets instructions instead.
    ============================================================ */
 const SEEN_KEY = 'pfd-install-seen';
+/* Bump this to re-show the sheet to everyone once more — including
+   people who dismissed an earlier version, and people already
+   installed (see openSheet, which skips the install steps for them).
+   Aug 12 2026: added the mando-group / info-button tips. */
+const SEEN_VERSION = '2';
 let deferredPrompt = null;
 
 function isInstalled(){
@@ -849,12 +854,30 @@ function installSteps(){
 }
 
 function openSheet(){
-  document.getElementById('ish-steps').innerHTML = installSteps();
+  const stepsEl = document.getElementById('ish-steps');
+  const installBtn = document.getElementById('ish-install');
+  // Already-installed visitors don't need install instructions (or the
+  // Install button — deferredPrompt never fires for them anyway) — just
+  // the tips below. Everyone else gets the full sheet, as before.
+  if (isInstalled()){
+    document.getElementById('ish-h').textContent = 'A couple of quick tips';
+    document.getElementById('ish-sub').textContent =
+      "You're already set up — just a couple of things worth knowing.";
+    stepsEl.hidden = true;
+    stepsEl.innerHTML = '';
+    installBtn.hidden = true;
+  } else {
+    document.getElementById('ish-h').textContent = 'Add to your home screen';
+    document.getElementById('ish-sub').textContent =
+      'Opens like an app — full screen, and works with no signal.';
+    stepsEl.hidden = false;
+    stepsEl.innerHTML = installSteps();
+  }
   document.getElementById('sheetwrap').hidden = false;
 }
 function closeSheet(){
   document.getElementById('sheetwrap').hidden = true;
-  localStorage.setItem(SEEN_KEY, '1');
+  localStorage.setItem(SEEN_KEY, SEEN_VERSION);
 }
 
 document.getElementById('ish-close').onclick = closeSheet;
@@ -878,12 +901,16 @@ window.addEventListener('beforeinstallprompt', e => {
   if (!document.getElementById('sheetwrap').hidden) openSheet();
 });
 window.addEventListener('appinstalled', () => {
-  localStorage.setItem(SEEN_KEY, '1');
+  localStorage.setItem(SEEN_KEY, SEEN_VERSION);
   deferredPrompt = null;
 });
 
-/* Show once, and only to people who could actually act on it. */
-if (!isInstalled() && !localStorage.getItem(SEEN_KEY) && (IS_IOS || IS_ANDROID)){
+/* Show once per SEEN_VERSION, to mobile visitors regardless of install
+   status — openSheet() itself adapts the content (install steps only
+   for people who haven't installed; just the tips for people who
+   have). Bumping SEEN_VERSION re-shows it to everyone once more,
+   including people who already dismissed an earlier version. */
+if (localStorage.getItem(SEEN_KEY) !== SEEN_VERSION && (IS_IOS || IS_ANDROID)){
   setTimeout(openSheet, 1200);
 }
 
