@@ -16,12 +16,12 @@
 <meta property="og:site_name" content="Pearland Fire Link">
 <meta property="og:title" content="Pearland Fire Link">
 <meta property="og:description" content="Unofficial quick links, shift calendar, mando schedule and station references for Pearland Fire Department.">
-<meta property="og:image" content="https://goondoc08.github.io/pearland-fire-link/icon-512.png">
-<meta property="og:url" content="https://goondoc08.github.io/pearland-fire-link/">
+<meta property="og:image" content="https://pfdlink.halfedge.dev/icon-512.png">
+<meta property="og:url" content="https://pfdlink.halfedge.dev/">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Pearland Fire Link">
 <meta name="twitter:description" content="Unofficial quick links, shift calendar, mando schedule and station references for Pearland Fire Department.">
-<meta name="twitter:image" content="https://goondoc08.github.io/pearland-fire-link/icon-512.png">
+<meta name="twitter:image" content="https://pfdlink.halfedge.dev/icon-512.png">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -517,6 +517,25 @@
   </div>
 </div>
 
+<div class="sheetwrap" id="movewrap" hidden>
+  <div class="isheet" role="dialog" aria-modal="true" aria-labelledby="move-h">
+    <div class="top">
+      <div style="width:46px;height:46px;border-radius:11px;flex:0 0 auto;background:var(--info);
+                  display:flex;align-items:center;justify-content:center;font-size:22px">📍</div>
+      <div>
+        <h3 id="move-h">We've moved</h3>
+        <div class="sub">PFD Link has a new address.</div>
+      </div>
+    </div>
+    <div class="tips" style="border-top:none;padding-top:0">
+      <p id="move-msg"></p>
+    </div>
+    <div class="btns">
+      <button id="move-close" class="primary">Got it</button>
+    </div>
+  </div>
+</div>
+
 <script src="shift.js"></script>
 <script src="mando.js"></script>
 <script src="links.js"></script>
@@ -910,8 +929,46 @@ window.addEventListener('appinstalled', () => {
    for people who haven't installed; just the tips for people who
    have). Bumping SEEN_VERSION re-shows it to everyone once more,
    including people who already dismissed an earlier version. */
-if (localStorage.getItem(SEEN_KEY) !== SEEN_VERSION && (IS_IOS || IS_ANDROID)){
-  setTimeout(openSheet, 1200);
+function maybeShowInstallSheet(){
+  if (localStorage.getItem(SEEN_KEY) !== SEEN_VERSION && (IS_IOS || IS_ANDROID)){
+    setTimeout(openSheet, 1200);
+  }
+}
+
+/* ============================================================
+   DOMAIN MOVE NOTICE
+   One-time notice for the goondoc08.github.io -> pfdlink.halfedge.dev
+   cutover. Installed users especially need this: a home-screen icon
+   is scoped to the origin it was installed from, so it doesn't just
+   follow a server redirect the way a plain bookmark does — it needs
+   removing and re-adding from the new address. Runs before the
+   install-tips sheet (chained in closeMoveSheet) so the two never
+   stack on top of each other for a first-time visitor.
+   ============================================================ */
+const MOVE_KEY = 'pfd-domain-move-seen';
+const MOVE_VERSION = '1';
+const NEW_DOMAIN = 'pfdlink.halfedge.dev';
+
+function openMoveSheet(){
+  document.getElementById('move-msg').innerHTML = isInstalled()
+    ? `This app now lives at <b>${NEW_DOMAIN}</b>. Please remove this icon from your home screen and add it again from that address — the old link will keep working for now, but the home-screen shortcut needs a fresh install to keep opening full-screen.`
+    : `This app now lives at <b>${NEW_DOMAIN}</b>. Update any bookmark you're using — the old link will keep redirecting here for now, but that's the address to save going forward.`;
+  document.getElementById('movewrap').hidden = false;
+}
+function closeMoveSheet(){
+  document.getElementById('movewrap').hidden = true;
+  localStorage.setItem(MOVE_KEY, MOVE_VERSION);
+  maybeShowInstallSheet();
+}
+document.getElementById('move-close').onclick = closeMoveSheet;
+document.getElementById('movewrap').onclick = e => {
+  if (e.target.id === 'movewrap') closeMoveSheet();     // tap the backdrop
+};
+
+if (localStorage.getItem(MOVE_KEY) !== MOVE_VERSION && (IS_IOS || IS_ANDROID)){
+  setTimeout(openMoveSheet, 800);
+} else {
+  maybeShowInstallSheet();
 }
 
 /* service worker */
