@@ -34,6 +34,7 @@
     --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
     --red:#e0362c; --a:#e0362c; --b:#2f7fe0; --c:#3aa85f;
     --amber:#e0a52c; --info:#e0873a;
+    --holiday:#a98ef0; --pp120:#34c1c9; --pp96:#e0a52c;
     --r:14px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -127,8 +128,21 @@
   .day.a .s{color:var(--a)} .day.b .s{color:var(--b)} .day.c .s{color:var(--c)}
   .day.today{outline:2px solid var(--txt);outline-offset:-2px}
   .day.today .n{color:var(--txt);font-weight:700}
-  .callegend{display:flex;gap:14px;justify-content:center;margin-top:9px;font-size:11px;color:var(--dim)}
+  /* holiday: purple box around the day, matching the purple the dept
+     uses on its own pay calendar sheet */
+  .day.holiday{box-shadow:inset 0 0 0 2px var(--holiday)}
+  /* pay period boundary: a colored bar on the side that starts/ends the
+     14-day period, colored by that period's total hours (120 vs 96) so
+     the two lengths read apart at a glance */
+  .day.pp-start-120{border-left:3px solid var(--pp120)}
+  .day.pp-start-96{border-left:3px solid var(--pp96)}
+  .day.pp-end-120{border-right:3px solid var(--pp120)}
+  .day.pp-end-96{border-right:3px solid var(--pp96)}
+  .callegend{display:flex;flex-wrap:wrap;gap:10px 14px;justify-content:center;margin-top:9px;font-size:11px;color:var(--dim)}
   .callegend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px}
+  .callegend i.box{background:none;box-shadow:inset 0 0 0 2px var(--holiday)}
+  .callegend i.bar-l{background:none;border-left:3px solid var(--pp120)}
+  .callegend i.bar-r{background:none;border-left:3px solid var(--pp96)}
 
   /* ---------- link sections ---------- */
   /* Each section carries an accent as an "r,g,b" triple in --acc (set from
@@ -152,6 +166,109 @@
   .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
   @media(min-width:480px){.tiles{grid-template-columns:repeat(5,1fr)}}
   @media(min-width:680px){.tiles{grid-template-columns:repeat(6,1fr)}}
+
+  /* ---------- desktop / MDT ----------
+     A real dashboard rather than a widened single column: left rail is
+     the shift-of-the-day card + two teaser cards (next mando, this
+     tour's station duties — each links through to the page with full
+     detail) + an always-open calendar; right side is the Links
+     directory. Today card is a second instance of the header's own
+     .shiftbar (same look — big colored shift letter is what firefighters
+     actually scan for) so it's hidden below the breakpoint rather than
+     removed from the header. #dsk-mando/#dsk-chore are genuinely new
+     content (mobile has its own header shift bar + the Duties/Mando
+     tiles in the grid for those), so they're hidden by default too, not
+     just unstyled. */
+  #dsk-today, #dsk-mando, #dsk-chore{display:none}
+  .shiftbar-static{cursor:default}
+
+  /* index.html has no shared .card class (unlike duties/mando) — it
+     boxes things via .calbox/.shiftbar's own styling instead, so these
+     two new boxes carry their own complete box treatment rather than
+     assuming one that doesn't exist here. */
+  .mnext{
+    background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dim);
+    border-radius:10px;padding:10px 12px;display:block;color:inherit;text-decoration:none;
+  }
+  .mnext .lbl{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .mnext .mnext-body{font-size:14.5px;margin-top:4px;color:var(--txt);line-height:1.5}
+
+  /* Tour Duties card: both calendar days of the current 48hr tour, not
+     just today — a tour that starts Wednesday reads "Cycle Count,
+     Office / Dorms and Apparatus Day — Secondary and Reserve" in one
+     line (see renderTourDuties). Shift-colored like .shiftbar; day
+     range in duties.html's bold-day-of-week style. */
+  .chore{
+    background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--dim);
+    border-radius:10px;padding:10px 12px;display:block;color:inherit;text-decoration:none;
+  }
+  .chore .lbl{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--faint);font-weight:700}
+  .chore .chore-day{font-size:19px;font-weight:800;margin-top:2px}
+  .chore.sA .chore-day{color:var(--a)} .chore.sB .chore-day{color:var(--b)} .chore.sC .chore-day{color:var(--c)}
+  .chore .chore-title{font-size:14.5px;color:var(--txt);margin-top:6px;line-height:1.4}
+
+  @media(min-width:1200px){
+    .wrap{
+      max-width:1500px;display:grid;
+      grid-template-columns:420px 1fr;column-gap:28px;align-items:start;
+    }
+    .icol-left{grid-column:1}
+    .icol-right{grid-column:2}
+    .wrap > footer{grid-column:1/-1}
+
+    .hdr-in{
+      max-width:1500px;margin:0 auto;
+      display:flex;align-items:center;column-gap:16px;
+    }
+    /* .brand's own box disappears (display:contents) so its children —
+       the logo, title, info button — become direct flex items of
+       .hdr-in instead, sitting alongside .search (which stays exactly
+       where it already is in the DOM, a later sibling of .brand, so
+       mobile's stacking order is untouched below this breakpoint).
+       `order` then sequences all four into one row: logo, title,
+       search, info. */
+    .brand{display:contents}
+    .brandmark{order:1}
+    .brand h1{order:2}
+    .search{order:3;flex:1;max-width:420px;margin-left:0}
+    /* search's flex:1 stops growing at its own max-width — the leftover
+       row space beyond that wasn't going anywhere, leaving info
+       stranded right after search with a dead gap to the true right
+       edge. infobtn's own auto margin picks up whatever's left once
+       search caps out, so it still lands flush right. */
+    .infobtn{order:4;margin-left:auto}
+    #shiftbar{display:none}
+
+    #cal{display:block !important;margin-bottom:14px}
+
+    #dsk-today, #dsk-mando, #dsk-chore{display:block;margin-bottom:14px}
+
+    /* Right column is roughly half the old full-page width now, so
+       "come down a lot" from the earlier 5/6-col pass means fewer px
+       per tile even at a higher column count — smaller tiles, bigger
+       label text (25% up from the 12px mobile base) so they stay
+       readable at a glance from across the room. */
+    .tiles{grid-template-columns:repeat(8,1fr)}
+    /* .icol-right prefix (not just .tile .nm) is load-bearing — the base
+       .tile .nm{font-size:12px} rule sits later in this file (in the
+       shared tile styles, unconditional), and at equal specificity
+       source order would win over this media query, silently losing
+       the override. Higher specificity here beats that regardless of
+       which rule comes first. */
+    .icol-right .tile .nm{font-size:15px}
+    /* Shorter, not a bar — same width (the touch target that actually
+       matters on the MDT's touchscreen), just less height, to cut the
+       Links section's vertical space without the clickability risk of
+       a thin row. Same .icol-right specificity trick as the font rule
+       above, same reason (base a.tile{aspect-ratio:1/.92} sits later
+       in the file). */
+    .icol-right a.tile{aspect-ratio:1/.65}
+  }
+  @media(min-width:1600px){
+    .wrap{max-width:1700px}
+    .hdr-in{max-width:1700px;margin:0 auto}
+    .tiles{grid-template-columns:repeat(9,1fr)}
+  }
 
   .tilewrap{position:relative}
   .star{
@@ -369,25 +486,49 @@
 </header>
 
 <div class="wrap">
-  <div id="cal">
-    <div class="calbox">
-      <div class="calnav">
-        <button id="prev" aria-label="Previous month">‹</button>
-        <div class="mo" id="molabel"></div>
-        <button id="next" aria-label="Next month">›</button>
-      </div>
-      <div class="grid7" id="dows"></div>
-      <div class="grid7" id="days"></div>
-      <div class="callegend">
-        <span><i style="background:var(--a)"></i>A</span>
-        <span><i style="background:var(--b)"></i>B</span>
-        <span><i style="background:var(--c)"></i>C</span>
-        <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = yours</span>
+  <div class="icol-left">
+    <div class="shiftbar shiftbar-static" id="dsk-today">
+      <span class="lt" id="dsk-lt">–</span>
+      <span class="meta">
+        <span class="d1" id="dsk-d1"></span><br>
+        <span class="d2" id="dsk-d2"></span>
+      </span>
+    </div>
+
+    <a class="mnext" id="dsk-mando" href="mando.html">
+      <div class="lbl">Mando</div>
+      <div class="mnext-body" id="dsk-mando-body">—</div>
+    </a>
+
+    <a class="chore" id="dsk-chore" href="duties.html">
+      <div class="lbl">Tour Duties</div>
+      <div class="chore-day" id="dsk-chore-days"></div>
+      <div class="chore-title" id="dsk-chore-title"></div>
+    </a>
+
+    <div id="cal">
+      <div class="calbox">
+        <div class="calnav">
+          <button id="prev" aria-label="Previous month">‹</button>
+          <div class="mo" id="molabel"></div>
+          <button id="next" aria-label="Next month">›</button>
+        </div>
+        <div class="grid7" id="dows"></div>
+        <div class="grid7" id="days"></div>
+        <div class="callegend">
+          <span><i style="background:var(--a)"></i>A</span>
+          <span><i style="background:var(--b)"></i>B</span>
+          <span><i style="background:var(--c)"></i>C</span>
+          <span><i class="box"></i>Holiday</span>
+          <span><i class="bar-l"></i>120hr PP</span>
+          <span><i class="bar-r"></i>96hr PP</span>
+          <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = yours</span>
+        </div>
       </div>
     </div>
   </div>
 
-  <main id="out"></main>
+  <main class="icol-right" id="out"></main>
 
   <footer>
     <div class="disc">
@@ -538,6 +679,8 @@
 
 <script src="shift.js"></script>
 <script src="mando.js"></script>
+<script src="duties.js"></script>
+<script src="payroll.js"></script>
 <script src="links.js"></script>
 <script>
 /* ---------- header shift bar ---------- */
@@ -545,11 +688,7 @@ const now = new Date();
 const TY = now.getFullYear(), TM = now.getMonth(), TD = now.getDate();
 (function renderShiftBar(){
   const s = shiftFor(TY, TM, TD);
-  const bar = document.getElementById('shiftbar');
-  bar.classList.add('s' + s.letter);
-  document.getElementById('sh-lt').textContent = s.letter;
-  document.getElementById('sh-d1').textContent =
-    now.toLocaleDateString(undefined, {weekday:'long', month:'short', day:'numeric'});
+  const d1text = now.toLocaleDateString(undefined, {weekday:'long', month:'short', day:'numeric'});
 
   // find the next day this platoon comes back on
   let off = 1;
@@ -560,9 +699,72 @@ const TY = now.getFullYear(), TM = now.getMonth(), TD = now.getDate();
     off++;
   }
   const back = new Date(TY, TM, TD + off);
-  document.getElementById('sh-d2').textContent =
-    `${s.letter} shift · day ${s.dayOf} of 2 · back on ` +
+  const d2text = `${s.letter} shift · day ${s.dayOf} of 2 · back on ` +
     back.toLocaleDateString(undefined, {weekday:'short', month:'numeric', day:'numeric'});
+
+  // Header shift bar (mobile + tablet) and the desktop-only Today card
+  // (#dsk-today) show the exact same facts — same computation, just
+  // written to two sets of elements. Firefighters want the big colored
+  // shift letter front and center on desktop too, not just mobile.
+  [['shiftbar','sh-lt','sh-d1','sh-d2'], ['dsk-today','dsk-lt','dsk-d1','dsk-d2']].forEach(
+    ([barId, ltId, d1Id, d2Id]) => {
+      document.getElementById(barId).classList.add('s' + s.letter);
+      document.getElementById(ltId).textContent = s.letter;
+      document.getElementById(d1Id).textContent = d1text;
+      document.getElementById(d2Id).textContent = d2text;
+    }
+  );
+})();
+
+/* ---------- desktop-only: Mando Next + this tour's duties ---------- */
+/* Same underlying data as mando.html/duties.html — condensed to a
+   one-glance card here, full detail lives on those pages (both cards
+   link through). Always rendered regardless of viewport (cheap), just
+   hidden below 1200px by CSS. */
+(function renderMandoNext(){
+  const body = document.getElementById('dsk-mando-body');
+  const v = localStorage.getItem('pfd-mando-group');
+  if (!v || !/^[ABC][1-7]$/.test(v) || typeof mandoSessions !== 'function') {
+    body.textContent = 'Set your group to see your next date.';
+    return;
+  }
+  const s = mandoSessions(v[0], +v[1], mandoToday(), 1)[0];
+  if (!s) { body.textContent = 'Nothing scheduled.'; return; }
+  const f = (ms, o) => new Date(ms).toLocaleDateString(undefined, Object.assign({timeZone:'UTC'}, o));
+  const sameMonth = new Date(s.day1).getUTCMonth() === new Date(s.day2).getUTCMonth();
+  const dates = f(s.day1, {month:'short', day:'numeric'}) + '–'
+              + f(s.day2, sameMonth ? {day:'numeric'} : {month:'short', day:'numeric'});
+  body.innerHTML = `<b>${v}</b> · ${dates}`;
+})();
+
+/* A tour is 2 consecutive calendar days (see shift.js) — this shows
+   BOTH days' station duties, not just today's, so it reads e.g. "Wed –
+   Thu: Cycle Count, Office / Dorms and Apparatus Day — Secondary and
+   Reserve" rather than just half the tour's chore list. */
+(function renderTourDuties(){
+  if (typeof DUTIES === 'undefined') return;
+  const sh = shiftFor(TY, TM, TD);
+  const day1Date = new Date(TY, TM, TD - (sh.dayOf - 1));
+  const day2Date = new Date(TY, TM, TD - (sh.dayOf - 1) + 1);
+  const day1Ix = day1Date.getDay(), day2Ix = day2Date.getDay();
+
+  const items = [];
+  // Wednesdays landing on day 1 of a tour are cycle count — duties.html
+  // hardcodes this same rule for its own "today" banner rather than
+  // deriving it from DUTIES[3].extra (that field is for the weekly
+  // picker's detail view instead), so this matches that pattern.
+  if (day1Ix === 3) items.push('Cycle Count');
+  items.push(DUTIES[day1Ix].title);
+  items.push(DUTIES[day2Ix].title);
+  const joined = items.length > 1
+    ? items.slice(0, -1).join(', ') + ' and ' + items[items.length - 1]
+    : items[0];
+
+  document.getElementById('dsk-chore').classList.add('s' + sh.letter);
+  document.getElementById('dsk-chore-days').textContent =
+    day1Date.toLocaleDateString(undefined, {weekday:'short'}) + ' – ' +
+    day2Date.toLocaleDateString(undefined, {weekday:'short'});
+  document.getElementById('dsk-chore-title').textContent = joined;
 })();
 
 /* ---------- calendar ---------- */
@@ -584,16 +786,24 @@ function drawCal(){
   for (let d = 1; d <= len; d++){
     const s = shiftFor(calY, calM, d);
     const isToday = (d === TD && calM === TM && calY === TY);
+    const dms = Date.UTC(calY, calM, d);
     // small tag: which group has mando that day; amber when it's yours
     let tag = '';
     if (typeof mandoOnDate === 'function'){
-      const mg = mandoOnDate(Date.UTC(calY, calM, d));
+      const mg = mandoOnDate(dms);
       if (mg){
         const id = mg.shift + mg.group;
         tag = `<span class="m${id === myGroup ? ' mine' : ''}">${id}</span>`;
       }
     }
-    html += `<div class="day ${s.letter.toLowerCase()}${isToday ? ' today' : ''}">
+    let extraCls = '';
+    if (typeof holidayOnDate === 'function' && holidayOnDate(dms)) extraCls += ' holiday';
+    if (typeof payPeriodInfo === 'function'){
+      const pp = payPeriodInfo(dms);
+      if (pp.isStart) extraCls += ` pp-start-${pp.hours}`;
+      if (pp.isEnd)   extraCls += ` pp-end-${pp.hours}`;
+    }
+    html += `<div class="day ${s.letter.toLowerCase()}${isToday ? ' today' : ''}${extraCls}">
                <span class="n">${d}</span><span class="s">${s.letter}</span>${tag}
              </div>`;
   }
@@ -951,8 +1161,8 @@ const NEW_DOMAIN = 'pfdlink.halfedge.dev';
 
 function openMoveSheet(){
   document.getElementById('move-msg').innerHTML = isInstalled()
-    ? `This app now lives at <b>${NEW_DOMAIN}</b>. Please remove this icon from your home screen and add it again from that address — the old link will keep working for now, but the home-screen shortcut needs a fresh install to keep opening full-screen.`
-    : `This app now lives at <b>${NEW_DOMAIN}</b>. Update any bookmark you're using — the old link will keep redirecting here for now, but that's the address to save going forward.`;
+    ? `This app now lives at <b>${NEW_DOMAIN}</b> — a dedicated address for long-term stability. Please remove this icon from your home screen and add it again from that address — the old link will keep working for now, but the home-screen shortcut needs a fresh install to keep opening full-screen.`
+    : `This app now lives at <b>${NEW_DOMAIN}</b> — a dedicated address for long-term stability. Update any bookmark you're using — the old link will keep redirecting here for now, but that's the address to save going forward.`;
   document.getElementById('movewrap').hidden = false;
 }
 function closeMoveSheet(){
