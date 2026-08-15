@@ -68,17 +68,26 @@ function holidayOnDate(ms){
 
 /* ------------------------------------------------------------
    PAY PERIODS — 14-day cycles anchored to a confirmed period
-   start from the FY27 sheet. Hours rotate 120/120/96 forever,
-   both forward and backward from the anchor.
+   start from the FY27 sheet. The 14-day boundaries (dayOf/isStart/
+   isEnd) are the same for every shift, but which periods run
+   120hrs vs 96hrs is NOT — all three shifts share the same
+   underlying 120/120/96 repeating cycle, just entered at a
+   different phase (confirmed against the A/B/C-Shift tabs of the
+   FY27 sheet: at the anchor period, A=120, C=120 (offset +1),
+   B=96 (offset +2)). There's no shift-agnostic "hours" for a pay
+   period — callers must pass the shift letter they mean.
    ------------------------------------------------------------ */
 const PAY_ANCHOR = Date.UTC(2026, 8, 26);   // Sat Sep 26 2026 = period start
 const PAY_HOURS_CYCLE = [120, 120, 96];
+const PAY_SHIFT_PHASE = { A: 0, C: 1, B: 2 };
 
-/* { hours, dayOf (0-13), isStart, isEnd } for a UTC-midnight ms. */
-function payPeriodInfo(ms){
+/* { hours, dayOf (0-13), isStart, isEnd } for a UTC-midnight ms and a
+   shift letter ('A'|'B'|'C'). */
+function payPeriodInfo(ms, shift){
   const diffDays = Math.round((ms - PAY_ANCHOR) / PAY_DAY);
   const idx = Math.floor(diffDays / 14);
   const dayOf = ((diffDays % 14) + 14) % 14;
-  const hours = PAY_HOURS_CYCLE[((idx % 3) + 3) % 3];
+  const phase = PAY_SHIFT_PHASE[shift] || 0;
+  const hours = PAY_HOURS_CYCLE[(((idx + phase) % 3) + 3) % 3];
   return { hours, dayOf, isStart: dayOf === 0, isEnd: dayOf === 13 };
 }

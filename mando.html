@@ -115,6 +115,15 @@
       <div class="pillrow" id="h-pills"></div>
     </div>
 
+    <!-- Toggled alongside #hero in render() (ready ? '' : 'none') — pay
+         periods (120hr/96hr) land on different weeks per shift, so PFD
+         Link's calendar can only show yours once your shift is known. -->
+    <div class="note" id="pp-note" style="display:none">
+      Your pay periods now show on the calendar in <b>PFD Link</b>, too —
+      120hr and 96hr weeks land differently by shift, so they only appear
+      once your group is set.
+    </div>
+
     <!-- Source position doesn't matter: render() always sets this to the
          exact opposite display of hero/up-h/up-card (see the `ready`
          branch below), so moving it here from after #up-card is purely
@@ -192,6 +201,7 @@ function render(){
   const ready = sel.shift && sel.group;
   document.getElementById('intro').style.display   = ready ? 'none' : '';
   document.getElementById('hero').style.display    = ready ? '' : 'none';
+  document.getElementById('pp-note').style.display = ready ? '' : 'none';
   document.getElementById('up-h').style.display    = ready ? '' : 'none';
   document.getElementById('up-card').style.display = ready ? '' : 'none';
   if (!ready) return;

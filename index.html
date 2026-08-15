@@ -520,8 +520,8 @@
           <span><i style="background:var(--b)"></i>B</span>
           <span><i style="background:var(--c)"></i>C</span>
           <span><i class="box"></i>Holiday</span>
-          <span><i class="bar-l"></i>120hr PP</span>
-          <span><i class="bar-r"></i>96hr PP</span>
+          <span id="pp-legend" hidden><i class="bar-l"></i>120hr PP <i class="bar-r"></i>96hr PP</span>
+          <span id="pp-legend-hint" style="color:var(--faint)" hidden>set mando group to see your pay periods</span>
           <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = yours</span>
         </div>
       </div>
@@ -585,7 +585,9 @@
 
         <dt>Set your mando group once</dt>
         <dd>Open <b>Mando Schedule</b> and pick your group. After that your next
-            dates show on the tile, and your days highlight amber in the calendar.</dd>
+            dates show on the tile, your days highlight amber in the calendar, and
+            your pay periods show up too — 120hr and 96hr are on different weeks
+            depending on your shift, so they only appear once your shift is known.</dd>
 
         <dt>Tap the shift bar</dt>
         <dd>The date bar at the top opens a month calendar — shift letter per day,
@@ -782,6 +784,13 @@ function drawCal(){
   let html = '';
   for (let i = 0; i < first; i++) html += '<div class="day pad"></div>';
   const myGroup = localStorage.getItem('pfd-mando-group');
+  // Pay periods run 120/120/96 for every shift, but which periods land on
+  // which length is offset per shift (confirmed against the FY27 pay
+  // calendar's A/B/C-Shift tabs) — there's no shift-agnostic answer, so
+  // this only draws once we know which shift the mando group implies.
+  const myShift = (myGroup && /^[ABC][1-7]$/.test(myGroup)) ? myGroup[0] : null;
+  document.getElementById('pp-legend').hidden = !myShift;
+  document.getElementById('pp-legend-hint').hidden = !!myShift;
 
   for (let d = 1; d <= len; d++){
     const s = shiftFor(calY, calM, d);
@@ -798,8 +807,8 @@ function drawCal(){
     }
     let extraCls = '';
     if (typeof holidayOnDate === 'function' && holidayOnDate(dms)) extraCls += ' holiday';
-    if (typeof payPeriodInfo === 'function'){
-      const pp = payPeriodInfo(dms);
+    if (myShift && typeof payPeriodInfo === 'function'){
+      const pp = payPeriodInfo(dms, myShift);
       if (pp.isStart) extraCls += ` pp-start-${pp.hours}`;
       if (pp.isEnd)   extraCls += ` pp-end-${pp.hours}`;
     }
