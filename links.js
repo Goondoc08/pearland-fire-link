@@ -37,7 +37,7 @@
    After editing: save, commit, push. That's it.
    ============================================================ */
 
-const LAST_UPDATED = "2026-08-04";   // bump when you do a review pass
+const LAST_UPDATED = "2026-08-12";   // bump when you do a review pass
 
 const LINKS = [
   {
@@ -97,7 +97,7 @@ const LINKS = [
       {
         name: "ESO Suite",
         desc: "ePCR & reporting",
-        url: "https://www.esosuite.net/Dashboard",
+        url: "https://www.esosuite.net/login/PEARLANDFD",
         pinned: true
       },
       {
