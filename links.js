@@ -227,7 +227,7 @@ const LINKS = [
         pinned: true
       },
       {
-        name: "HR Suite",
+        name: "Esuite",
         desc: "Paychecks, accruals",
         url: "https://myhr.pearlandtx.gov/Websites.HR.Portal/Default.aspx",
         offsite: true,
