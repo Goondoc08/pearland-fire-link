@@ -237,6 +237,7 @@ const LINKS = [
         name: "Pay Check",
         desc: "Shift pay calculator",
         url: "https://paycheck.halfedge.dev",
+        icon: "icon-paycheck-32.png",
         pinned: true
       },
       {
