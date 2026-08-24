@@ -1,6 +1,6 @@
 /* Pearland Fire Link — service worker
    BUMP THIS VERSION EVERY TIME YOU DEPLOY, or phones will keep the old links. */
-const CACHE = 'pfd-link-v36';
+const CACHE = 'pfd-link-v37';
 
 const SHELL = [
   './',
@@ -19,7 +19,7 @@ const SHELL = [
   './icon-maskable-512.png',
   './icon-180.png',
   './favicon-32.png',
-  './icon-paycheck-32.png',
+  './icon-paycheck-full.png',
   './fire-districts.pdf'   // ~1.6MB, precached so it opens with no signal
 ];
 
