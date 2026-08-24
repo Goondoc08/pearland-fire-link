@@ -314,7 +314,13 @@
      whole tile edge-to-edge instead, so it stands out among plain link
      tiles. overflow:hidden clips the image to the tile's own radius. */
   a.tile.coverart{padding:0;overflow:hidden}
-  .tile .coverimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  /* contain, not cover: the desktop rail's ".icol-right" tiles are a much
+     shorter/wider bar (aspect-ratio 1/.65 vs the mobile grid's 1/.92 —
+     see the media query above), and cover-cropping a square icon into
+     that shape clipped the bottom of the artwork off. contain always
+     shows the whole icon, letterboxed on whichever axis has room, with
+     the tile's own accent-tinted background showing through the gap. */
+  .tile .coverimg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
   .sr-only{
     position:absolute;width:1px;height:1px;padding:0;margin:-1px;
     overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
