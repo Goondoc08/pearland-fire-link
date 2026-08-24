@@ -234,6 +234,12 @@ const LINKS = [
         pinned: true
       },
       {
+        name: "Pay Check",
+        desc: "Shift pay calculator",
+        url: "https://paycheck.halfedge.dev",
+        pinned: true
+      },
+      {
         name: "IT Helpdesk",
         desc: "Submit a support ticket",
         url: "https://helpdesk.pearlandtx.gov/support/home"
