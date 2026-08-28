@@ -256,9 +256,26 @@ const LINKS = [
         url: "https://pearlandfd.b2bbuyersecure.com/?redirectURL=https://pearlandfd.gycuniforms.com/"
       },
       {
+        // Same dead end as Pulsara, checked the same way. There IS a native
+        // app — "Lexipol KMS Mobile" on Android, package
+        // com.lexipol.mobile.prime (confirmed via the official Play Store
+        // listing) — but nothing here can hook into it:
+        //   - No App Links / Universal Links: policy.lexipol.com serves 404
+        //     for both /.well-known/assetlinks.json and
+        //     /.well-known/apple-app-site-association.
+        //   - No published custom scheme found anywhere (Lexipol's own
+        //     docs, help center, third-party sources — nothing).
+        //   - An Android intent: URL by package (same technique as
+        //     Handtevy/Pulsara) tested false on a real device with the app
+        //     installed: fell through to the Play Store listing every time,
+        //     never opened the app itself — same BROWSABLE-activity gap
+        //     Pulsara hit.
+        // Bottom line: nothing to attempt "app first" with. If Lexipol ever
+        // publishes one of the above, revisit.
         name: "Lexipol",
         desc: "Policy manual",
-        url: "https://policy.lexipol.com/"
+        url: "https://policy.lexipol.com/",
+        webOnly: true
       },
       {
         name: "FR1 Training",
