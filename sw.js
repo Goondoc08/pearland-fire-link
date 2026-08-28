@@ -1,6 +1,6 @@
 /* Pearland Fire Link — service worker
    BUMP THIS VERSION EVERY TIME YOU DEPLOY, or phones will keep the old links. */
-const CACHE = 'pfd-link-v40';
+const CACHE = 'pfd-link-v41';
 
 const SHELL = [
   './',
@@ -8,6 +8,7 @@ const SHELL = [
   './flowchart.html',
   './duties.html',
   './mando.html',
+  './contacts.html',
   './links.js',
   './shift.js',
   './mando.js',

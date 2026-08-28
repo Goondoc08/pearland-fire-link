@@ -143,6 +143,45 @@ const LINKS = [
   },
 
   {
+    category: "Field Reference",
+    accent: "168,138,94",
+    icon: "book",
+    items: [
+      {
+        name: "Engine Manual",
+        desc: "Engine Company Operations Manual, 2nd ed.",
+        url: "engine-manual.pdf"
+      },
+      {
+        name: "Truck Manual",
+        desc: "Truck Company Operations Manual, 2nd ed.",
+        url: "truck-manual.pdf"
+      },
+      {
+        name: "PPE Flow Chart",
+        desc: "Inspection & advanced cleaning steps",
+        url: "flowchart.html"
+      },
+      {
+        // No web counterpart at all — this is app-only, so there's no
+        // "webOnly" fallback badge that makes sense here, just a normal
+        // store tile like EMS Protocols/Mindbase. Verified official (not
+        // a lookalike): iOS bundle gov.dot.phmsa.erg2, seller "Pipeline
+        // and Hazardous Materials Safety Administration", updated Oct
+        // 2024. Android package gov.nih.nlm.erg2012 — the NIH-era name
+        // stuck through PHMSA's rebrand, but the live Play listing shows
+        // developer "PHMSA", 1M+ downloads, updated Aug 2024.
+        name: "ERG",
+        desc: "Emergency Response Guidebook — hazmat placards/IDs",
+        url: "https://play.google.com/store/apps/details?id=gov.nih.nlm.erg2012",
+        android: "https://play.google.com/store/apps/details?id=gov.nih.nlm.erg2012",
+        ios: "https://apps.apple.com/us/app/erg-for-ios/id1597142669",
+        store: true
+      }
+    ]
+  },
+
+  {
     category: "Forms & Checklists",
     accent: "128,122,222",
     icon: "clipboard",
@@ -163,25 +202,6 @@ const LINKS = [
         name: "Live Fire Vitals",
         desc: "Vitals log for live fire evolutions",
         url: "https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=jKLimMbeYkavgqyuOCdWegsZ1CGuolhJs1kMw31341ZUMVdXMlVXVkJBMjJEV041UTFPNERXNkg3Qy4u",
-        pinned: true
-      },
-      {
-        name: "PPE Flow Chart",
-        desc: "Inspection & advanced cleaning steps",
-        url: "flowchart.html",
-        pinned: true
-      },
-      {
-        name: "Station Duties",
-        desc: "Tour tasks and the weekly rotation",
-        url: "duties.html",
-        pinned: true
-      },
-      {
-        name: "Mando Schedule",
-        desc: "Your group's mandatory training dates",
-        url: "mando.html",
-        id: "mando",
         pinned: true
       },
       {
@@ -211,6 +231,15 @@ const LINKS = [
         name: "TranStar Closures",
         desc: "Houston-area closures & traffic",
         url: "https://traffic.houstontranstar.org/roadclosures/"
+      },
+      {
+        // Location param is base64 JSON: {"view":{"latitude":...,
+        // "longitude":...,"zoom":...,"eventId":null}}. CenterPoint's
+        // default link centers northwest of Pearland, zoomed out to the
+        // whole Houston metro — this recenters on Pearland itself.
+        name: "CenterPoint Outages",
+        desc: "Power outage tracker, centered on Pearland",
+        url: "https://tracker.centerpointenergy.com/map/texas?location=eyJ2aWV3Ijp7ImxhdGl0dWRlIjoyOS41NjM2LCJsb25naXR1ZGUiOi05NS4yODYsInpvb20iOjEyLCJldmVudElkIjpudWxsfX0="
       }
     ]
   },
@@ -220,6 +249,13 @@ const LINKS = [
     accent: "47,127,224",
     icon: "badge",
     items: [
+      {
+        name: "Mando Schedule",
+        desc: "Your group's mandatory training dates",
+        url: "mando.html",
+        id: "mando",
+        pinned: true
+      },
       {
         name: "City Email",
         desc: "Outlook webmail",
@@ -283,9 +319,21 @@ const LINKS = [
         url: "https://olt.firerescue1academy.com/login/#login"
       },
       {
-        name: "City Fire Page",
-        desc: "Public department page",
-        url: "https://www.pearlandtx.gov/departments/fire"
+        // Was a link straight out to pearlandtx.gov's department page —
+        // replaced with an in-app contacts page (numbers/addresses pulled
+        // from that same site, verified live) since a phone directory is
+        // more useful here than a marketing page, and this is exactly the
+        // kind of thing worth handing a resident without them needing to
+        // save a number to their own phone.
+        name: "Fire Dept. Contacts",
+        desc: "Non-emergency, Fire Marshal, PIO, stations",
+        url: "contacts.html"
+      },
+      {
+        name: "Station Duties",
+        desc: "Tour tasks and the weekly rotation",
+        url: "duties.html",
+        pinned: true
       }
     ]
   },
