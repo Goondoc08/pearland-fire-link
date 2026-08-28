@@ -12,6 +12,9 @@
 
    Optional flags you can add to any link:
      offsite: true  -> shows an "Off City WiFi" badge (won't load on the station network)
+     cityOnly: true -> shows a "City Network Only" badge — the opposite of offsite:
+                       this ONLY resolves on the city network, and won't load over
+                       cell data or an outside connection at all.
      app:  true     -> shows an "App" badge (native app, not a website)
      webOnly: true  -> shows a "Web Only" badge — there IS a native app for this,
                        but nothing (confirmed scheme, verified App Link) exists
@@ -138,6 +141,16 @@ const LINKS = [
         android: "https://play.google.com/store/apps/details?id=com.acidremap.PPPPearlandFD",
         ios: "https://www.acidremap.com/customAppDownload.php?bundleID=PPPPearlandFD&platform=iOS",
         store: true
+      },
+      {
+        // ehcec.net resolves inside the city network only — cityOnly is the
+        // honest badge here rather than silently failing off-network. It's
+        // also its own login (the URL lands on /#/login), so there's
+        // nothing sensitive exposed by the tile existing even off-network.
+        name: "WebCAD",
+        desc: "Dispatch / CAD viewer — city network only",
+        url: "http://webcad.ehcec.net/#/login",
+        cityOnly: true
       }
     ]
   },
@@ -325,8 +338,8 @@ const LINKS = [
         // more useful here than a marketing page, and this is exactly the
         // kind of thing worth handing a resident without them needing to
         // save a number to their own phone.
-        name: "Fire Dept. Contacts",
-        desc: "Non-emergency, Fire Marshal, PIO, stations",
+        name: "Contacts Fire & City",
+        desc: "Non-emergency, Fire Marshal, PIO, City Hall, stations",
         url: "contacts.html"
       },
       {

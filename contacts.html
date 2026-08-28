@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f1216">
-<title>Fire Dept. Contacts</title>
+<title>Fire &amp; City Contacts</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>
@@ -50,9 +50,6 @@
   }
   .row .dial:active{background:var(--line)}
   .row .dial svg{width:14px;height:14px;color:var(--green);flex:0 0 auto}
-  .row.emergency .dial{background:var(--red);border-color:var(--red)}
-  .row.emergency .dial svg{color:#fff}
-  .row.emergency .nm{color:#ff8b82;font-size:15.5px}
 
   /* station address rows: no dial pill, just an address that opens Maps */
   .addr{display:block;padding:12px 0;border-bottom:1px solid var(--line);color:inherit;text-decoration:none}
@@ -76,32 +73,18 @@
 
 <div class="bar"><div class="bar-in">
   <a href="index.html">‹ Back</a>
-  <h1>Fire Dept. Contacts</h1>
+  <h1>Fire &amp; City Contacts</h1>
 </div></div>
 
 <div class="wrap">
 
   <div class="ccol ccol-left">
-    <h2>Emergency</h2>
-    <div class="card">
-      <div class="row emergency">
-        <div class="info">
-          <div class="nm">Fire, EMS, or Police</div>
-          <div class="sub">Any active emergency</div>
-        </div>
-        <a class="dial" href="tel:911">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.9.6a2 2 0 0 1 1.8 2.1z"/></svg>
-          911
-        </a>
-      </div>
-    </div>
-
     <h2>Non-Emergency &amp; Administration</h2>
     <div class="card">
       <div class="row">
         <div class="info">
           <div class="nm">Non-Emergency Line</div>
-          <div class="sub">Fire Administration &amp; all stations</div>
+          <div class="sub">Fire Administration</div>
         </div>
         <a class="dial" href="tel:+12819975850">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.9.6a2 2 0 0 1 1.8 2.1z"/></svg>
@@ -168,13 +151,36 @@
       </div>
     </div>
 
+    <h2>City Hall</h2>
+    <div class="card">
+      <div class="row">
+        <div class="info">
+          <div class="nm">Main Number</div>
+          <div class="sub">General city business, all departments</div>
+        </div>
+        <a class="dial" href="tel:+12816521600">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.9.6a2 2 0 0 1 1.8 2.1z"/></svg>
+          281.652.1600
+        </a>
+      </div>
+    </div>
+
     <div class="note">
-      Safe to hand this page to a resident — every number here is the
-      department's own public line, nothing personal.
+      Safe to hand this page to a resident — every number here is a
+      city or department line, nothing personal.
     </div>
   </div>
 
   <div class="ccol ccol-right">
+    <h2>City Hall</h2>
+    <div class="card">
+      <a class="addr" href="https://maps.google.com/?q=3519+Liberty+Drive,+Pearland,+TX+77581" target="_blank" rel="noopener noreferrer">
+        <div class="nm">City Hall</div>
+        <div class="ln">3519 Liberty Drive, Pearland, TX 77581</div>
+        <div class="go">Get directions ↗</div>
+      </a>
+    </div>
+
     <h2>Stations</h2>
     <div class="card">
       <a class="addr" href="https://maps.google.com/?q=2703+Veterans+Dr,+Pearland,+TX+77584" target="_blank" rel="noopener noreferrer">
@@ -220,8 +226,9 @@
   </div>
 
   <footer>
-    Source: pearlandtx.gov, department &amp; Fire Marshal's Office pages. Verified current
-    as of this app's last review — call the non-emergency line if anything here looks stale.
+    Source: pearlandtx.gov — Fire, Fire Marshal, City Hall &amp; Facility Directory pages.
+    Verified current as of this app's last review — call the non-emergency line if
+    anything here looks stale.
   </footer>
 </div>
 

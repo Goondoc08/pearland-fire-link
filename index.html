@@ -366,6 +366,7 @@
   .b-app{background:#12303a;color:#4ab6e0}
   .b-web{background:#241b3a;color:#a98ef0}
   .b-store{background:#1b3226;color:#5fc48c}
+  .b-city{background:#1c2430;color:#8aa2c2}
 
   .empty{text-align:center;color:var(--faint);font-size:14px;padding:40px 0}
 
@@ -877,10 +878,11 @@ const ICONS = {
 
 function tileHTML(it){
   const badges =
-    (it.offsite ? '<span class="badge b-wifi">Off City WiFi</span>' : '') +
-    (it.app     ? '<span class="badge b-app">App</span>'            : '') +
-    (it.webOnly ? '<span class="badge b-web">Web Only</span>'       : '') +
-    (it.store   ? '<span class="badge b-store">Store</span>'        : '');
+    (it.offsite  ? '<span class="badge b-wifi">Off City WiFi</span>'   : '') +
+    (it.cityOnly ? '<span class="badge b-city">City Network Only</span>' : '') +
+    (it.app      ? '<span class="badge b-app">App</span>'              : '') +
+    (it.webOnly  ? '<span class="badge b-web">Web Only</span>'         : '') +
+    (it.store    ? '<span class="badge b-store">Store</span>'          : '');
   const href = urlFor(it);
   // local pages stay in the app; everything else opens out
   const local = !/^(https?:|tel:)/.test(href);
