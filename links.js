@@ -321,7 +321,7 @@ const LINKS = [
         //     Pulsara hit.
         // Bottom line: nothing to attempt "app first" with. If Lexipol ever
         // publishes one of the above, revisit.
-        name: "Lexipol",
+        name: "Lexipol<br>Policy",
         desc: "Policy manual",
         url: "https://policy.lexipol.com/",
         webOnly: true
@@ -338,7 +338,7 @@ const LINKS = [
         // more useful here than a marketing page, and this is exactly the
         // kind of thing worth handing a resident without them needing to
         // save a number to their own phone.
-        name: "Contacts Fire & City",
+        name: "Contacts<br>Fire & City",
         desc: "Non-emergency, Fire Marshal, PIO, City Hall, stations",
         url: "contacts.html"
       },
