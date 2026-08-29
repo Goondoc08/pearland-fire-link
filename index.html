@@ -212,7 +212,14 @@
       max-width:1500px;display:grid;
       grid-template-columns:420px 1fr;column-gap:28px;align-items:start;
     }
-    .icol-left{grid-column:1}
+    /* Right column leads with a section heading (.sec h2's own
+       margin-top:22px + its line height + margin-bottom:9px, ~49px
+       total) before its first tile row. Left column has no such
+       heading, so without this it starts noticeably higher than the
+       tiles do — this margin gives it back that same 49px so the
+       Today card's top lines up with the first tile row's top,
+       instead of with the section heading text above it. */
+    .icol-left{grid-column:1;margin-top:49px}
     .icol-right{grid-column:2}
     .wrap > footer{grid-column:1/-1}
 
