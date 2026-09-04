@@ -28,14 +28,88 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="PFD Link">
+<script>
+  /* Applied before the stylesheet paints anything, so there's no flash of
+     the wrong theme on load. "system" (or nothing stored) leaves no
+     attribute at all — the prefers-color-scheme media query below is what
+     decides in that case. */
+  (function(){
+    try{
+      var t = localStorage.getItem('pfd-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
 <style>
+  /* ---------- theme tokens ----------
+     Light is the default palette; dark lives in two places that must be
+     kept in sync (see the big comment on the media-query block below).
+     Everything else in this file reads colors through these variables —
+     see docs/BUILD_PLAN.md-style rule: no raw hex for anything that
+     should flip between light and dark. One exception is left on purpose:
+     the mando "mine" tag inside a calendar day cell stays a fixed dark
+     chip in both themes — it's a tiny self-contained pill that reads fine
+     on either background, and theming it added complexity for no gain. */
   :root{
+    --bg:#f3f5f7; --panel:#ffffff; --panel2:#eef1f4; --line:#dde2e8;
+    --txt:#161b22; --dim:#5b6673; --faint:#8892a0;
+    --red:#c62f26; --a:#c62f26; --b:#1f66c4; --c:#298048;
+    --amber:#ad7a12; --info:#b3591a;
+    --holiday:#7c5bc4; --pp120:#1b8f97; --pp96:#ad7a12;
+    /* Small tinted chips (badges, the urgent tile) — a pale wash + a
+       matching darker ink, one pair per hue. Shared naming with the same
+       tokens on duties.html/mando.html so the site's chip language stays
+       consistent across pages even though each page's stylesheet is
+       separate. */
+    --tint-red-bg:#fbe4e2; --tint-red-line:#e2a39c; --tint-red-txt:#a3312a;
+    --tint-amber-bg:#fbf0d9; --tint-amber-line:#e0c98a; --tint-amber-txt:#8a6110;
+    --tint-blue-bg:#e3f2fa; --tint-blue-txt:#14647d;
+    --tint-purple-bg:#efe9fa; --tint-purple-txt:#5b3fa0;
+    --tint-green-bg:#e3f5ea; --tint-green-txt:#1f7a4d;
+    --tint-slate-bg:#e8ecf2; --tint-slate-txt:#445872;
+    --toast-bg:#20242b; --toast-txt:#f2f5f8;
+    --r:14px;
+    color-scheme:light;
+  }
+  /* Dark lives in two places on purpose:
+     - the media query covers "system" (no data-theme on <html>), guarded
+       with :not([data-theme="light"]) so a manual Light pick can override
+       a dark OS preference
+     - [data-theme="dark"] covers a manual Dark pick regardless of what the
+       OS prefers
+     Keep both in sync — see the toggle button's script near the bottom
+     of this file for how data-theme gets set. */
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+      --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+      --red:#e0362c; --a:#e0362c; --b:#2f7fe0; --c:#3aa85f;
+      --amber:#e0a52c; --info:#e0873a;
+      --holiday:#a98ef0; --pp120:#34c1c9; --pp96:#e0a52c;
+      --tint-red-bg:#3a1512; --tint-red-line:#5a2320; --tint-red-txt:#ff8a80;
+      --tint-amber-bg:#3a2f12; --tint-amber-line:#4a3d18; --tint-amber-txt:#e0b64a;
+      --tint-blue-bg:#12303a; --tint-blue-txt:#4ab6e0;
+      --tint-purple-bg:#241b3a; --tint-purple-txt:#a98ef0;
+      --tint-green-bg:#1b3226; --tint-green-txt:#5fc48c;
+      --tint-slate-bg:#1c2430; --tint-slate-txt:#8aa2c2;
+      --toast-bg:#e8edf3; --toast-txt:#0f1216;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
     --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
     --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
     --red:#e0362c; --a:#e0362c; --b:#2f7fe0; --c:#3aa85f;
     --amber:#e0a52c; --info:#e0873a;
     --holiday:#a98ef0; --pp120:#34c1c9; --pp96:#e0a52c;
-    --r:14px;
+    --tint-red-bg:#3a1512; --tint-red-line:#5a2320; --tint-red-txt:#ff8a80;
+    --tint-amber-bg:#3a2f12; --tint-amber-line:#4a3d18; --tint-amber-txt:#e0b64a;
+    --tint-blue-bg:#12303a; --tint-blue-txt:#4ab6e0;
+    --tint-purple-bg:#241b3a; --tint-purple-txt:#a98ef0;
+    --tint-green-bg:#1b3226; --tint-green-txt:#5fc48c;
+    --tint-slate-bg:#1c2430; --tint-slate-txt:#8aa2c2;
+    --toast-bg:#e8edf3; --toast-txt:#0f1216;
+    color-scheme:dark;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
@@ -66,6 +140,23 @@
     padding:0 0 1px 0;
   }
   .infobtn:active{background:rgba(224,135,58,.16)}
+  /* Cycles system -> light -> dark -> system. Sits right next to the info
+     button, same size/shape, so the header's icon row reads as one group. */
+  .themebtn{
+    margin-left:8px;flex:0 0 auto;
+    width:28px;height:28px;border-radius:50%;
+    background:none;border:1.6px solid var(--faint);color:var(--dim);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    padding:0;
+  }
+  .themebtn:active{background:rgba(128,128,128,.16)}
+  .themebtn svg{width:15px;height:15px}
+  .themebtn .ic-system{display:none}
+  .themebtn .ic-light{display:none}
+  .themebtn .ic-dark{display:none}
+  .themebtn[data-mode="system"] .ic-system{display:block}
+  .themebtn[data-mode="light"] .ic-light{display:block}
+  .themebtn[data-mode="dark"] .ic-dark{display:block}
   .brand h1{font-size:17px;font-weight:700;letter-spacing:.2px;margin:0}
   /* shift bar */
   .shiftbar{
@@ -292,7 +383,7 @@
     content:"";position:absolute;inset:-7px;
   }
   .star:active{background:rgba(255,255,255,.1)}
-  .star.on{color:#f0c063}
+  .star.on{color:var(--amber)}
 
   /* The name sits at the true visual center of the tile, always — a
      badge or the mando date is pinned to the bottom band instead of
@@ -362,18 +453,18 @@
     font-size:9px;color:var(--dim);font-weight:500;
   }
   .tile .go{display:none}
-  .tile.urgent{border-color:#5a2320;background:#1d1413}
-  .tile.urgent .nm{color:#ff7a70}
+  .tile.urgent{border-color:var(--tint-red-line);background:var(--tint-red-bg)}
+  .tile.urgent .nm{color:var(--tint-red-txt)}
 
   .badge{
     font-size:7.5px;letter-spacing:.3px;text-transform:uppercase;font-weight:700;
     padding:1.5px 5px;border-radius:4px;white-space:nowrap;
   }
-  .b-wifi{background:#3a2f12;color:#e0b64a}
-  .b-app{background:#12303a;color:#4ab6e0}
-  .b-web{background:#241b3a;color:#a98ef0}
-  .b-store{background:#1b3226;color:#5fc48c}
-  .b-city{background:#1c2430;color:#8aa2c2}
+  .b-wifi{background:var(--tint-amber-bg);color:var(--tint-amber-txt)}
+  .b-app{background:var(--tint-blue-bg);color:var(--tint-blue-txt)}
+  .b-web{background:var(--tint-purple-bg);color:var(--tint-purple-txt)}
+  .b-store{background:var(--tint-green-bg);color:var(--tint-green-txt)}
+  .b-city{background:var(--tint-slate-bg);color:var(--tint-slate-txt)}
 
   .empty{text-align:center;color:var(--faint);font-size:14px;padding:40px 0}
 
@@ -396,7 +487,7 @@
   .toast{
     position:fixed; left:50%; transform:translateX(-50%) translateY(14px);
     bottom:calc(env(safe-area-inset-bottom) + 82px); z-index:40;
-    background:#e8edf3; color:#0f1216; font-size:13.5px; font-weight:600;
+    background:var(--toast-bg); color:var(--toast-txt); font-size:13.5px; font-weight:600;
     padding:9px 16px; border-radius:20px; opacity:0; pointer-events:none;
     transition:opacity .18s, transform .18s; max-width:88vw; text-align:center;
   }
@@ -417,18 +508,18 @@
   .isheet img{width:46px;height:46px;border-radius:11px;flex:0 0 auto}
   .isheet h3{margin:0;font-size:16.5px;font-weight:700}
   .isheet .sub{font-size:12.5px;color:var(--dim);margin-top:2px}
-  .isheet ol{margin:0 0 14px;padding-left:20px;color:#cfd8e2;font-size:14px;line-height:1.75}
+  .isheet ol{margin:0 0 14px;padding-left:20px;color:var(--dim);font-size:14px;line-height:1.75}
   .isheet ol b{color:var(--txt)}
   /* Two quick orientation tips below the install steps — not part of
      installing itself, so a separate block rather than more <ol> items
      pretending to be sequential steps. */
   .isheet .tips{margin:0 0 14px;padding-top:12px;border-top:1px solid var(--line)}
-  .isheet .tips p{margin:0 0 8px;color:#cfd8e2;font-size:13px;line-height:1.55}
+  .isheet .tips p{margin:0 0 8px;color:var(--dim);font-size:13px;line-height:1.55}
   .isheet .tips p:last-child{margin-bottom:0}
   .isheet .tips b{color:var(--txt)}
   .isheet .ic{
     display:inline-flex;vertical-align:-4px;margin:0 2px;
-    width:17px;height:17px;color:#7fb0ff;
+    width:17px;height:17px;color:var(--b);
   }
   .isheet .btns{display:flex;gap:9px}
   .isheet button{
@@ -460,7 +551,7 @@
   .faqbody dt{font-size:13.5px;font-weight:650;color:var(--txt);margin-top:11px}
   .faqbody dt:first-child{margin-top:0}
   .faqbody dd{margin:3px 0 0;font-size:12.5px;color:var(--dim);line-height:1.55}
-  .faqbody dd b{color:#c3ccd6}
+  .faqbody dd b{color:var(--txt)}
   .faqbody .tag{
     display:inline-block;font-size:8px;letter-spacing:.3px;text-transform:uppercase;
     font-weight:700;padding:1px 5px;border-radius:4px;vertical-align:1px;
@@ -490,6 +581,12 @@
       <h1>Pearland Fire Link</h1>
       <button class="infobtn" id="infobtn" type="button"
               aria-label="Tips and known limitations">i</button>
+      <button class="themebtn" id="themebtn" type="button" data-mode="system"
+              aria-label="Appearance: System">
+        <svg class="ic-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>
+        <svg class="ic-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+        <svg class="ic-dark" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.5 14.5a8.5 8.5 0 0 1-11-11 8.5 8.5 0 1 0 11 11z"/></svg>
+      </button>
     </div>
 
     <button class="shiftbar" id="shiftbar" aria-expanded="false">
@@ -548,7 +645,7 @@
           <span><i class="box"></i>Holiday</span>
           <span id="pp-legend" hidden><i class="bar-l"></i>120hr PP <i class="bar-r"></i>96hr PP</span>
           <span id="pp-legend-hint" style="color:var(--faint)" hidden>set mando group to see your pay periods</span>
-          <span style="color:var(--faint)">tag = mando group · <b style="color:#f0c063">amber</b> = yours</span>
+          <span style="color:var(--faint)">tag = mando group · <b style="color:var(--amber)">amber</b> = yours</span>
         </div>
       </div>
     </div>
@@ -711,6 +808,49 @@
 <script src="payroll.js"></script>
 <script src="links.js"></script>
 <script>
+/* ============================================================
+   APPEARANCE TOGGLE
+   Cycles system -> light -> dark -> system, persisted to localStorage.
+   The early blocking <script> in <head> already applied whatever was
+   stored, before first paint — this just wires up the button and keeps
+   the address-bar theme-color meta tag matching what's actually showing.
+   ============================================================ */
+const THEME_KEY = 'pfd-theme';
+const themeBtn = document.getElementById('themebtn');
+const THEME_LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
+const THEME_COLORS = { light: '#f3f5f7', dark: '#0f1216' };
+
+function resolvedTheme(mode){
+  if (mode === 'system'){
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return mode;
+}
+function applyThemeColorMeta(mode){
+  document.querySelector('meta[name="theme-color"]')
+    .setAttribute('content', THEME_COLORS[resolvedTheme(mode)]);
+}
+function setTheme(mode){
+  if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  themeBtn.dataset.mode = mode;
+  themeBtn.setAttribute('aria-label', 'Appearance: ' + THEME_LABELS[mode]);
+  applyThemeColorMeta(mode);
+  try { localStorage.setItem(THEME_KEY, mode); } catch(e){}
+}
+
+(function initTheme(){
+  let stored = 'system';
+  try { stored = localStorage.getItem(THEME_KEY) || 'system'; } catch(e){}
+  setTheme(stored);
+})();
+
+themeBtn.onclick = () => {
+  const order = ['system', 'light', 'dark'];
+  const next = order[(order.indexOf(themeBtn.dataset.mode) + 1) % order.length];
+  setTheme(next);
+};
+
 /* ---------- header shift bar ---------- */
 const now = new Date();
 const TY = now.getFullYear(), TM = now.getMonth(), TD = now.getDate();

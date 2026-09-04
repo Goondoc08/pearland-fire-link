@@ -7,7 +7,20 @@
 <title>PPE Inspection &amp; Advanced Cleaning Flow Chart</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icon-180.png">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('pfd-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
 <style>
+  /* Only the chrome around the sheet (body backdrop + top bar) themes —
+     the .sheet itself is a fixed white "paper" diagram in both modes on
+     purpose, same as it already is in print. Its blue/red/indigo/orange
+     box fills are diagram semantics (decision boxes, outcomes), not page
+     theme, so they stay as originally designed regardless of --bg/--txt. */
   :root{
     --blue:#4a7ebb; --blue-bd:#a9c3de;
     --green:#4f8a5b;
@@ -15,23 +28,50 @@
     --orange:#dd7159;
     --indigo:#5c5f9e; --indigo-bd:#b9bbdd;
     --ink:#22303c; --dim:#5a6b7a;
+    --chrome-bg:#f3f5f7; --chrome-line:#dde2e8; --chrome-dim:#5b6673;
+    --chrome-panel2:#eef1f4; --chrome-txt:#161b22;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --chrome-bg:#0f1216; --chrome-line:#2a323c; --chrome-dim:#93a1b1;
+      --chrome-panel2:#1e242c; --chrome-txt:#e8edf3;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --chrome-bg:#0f1216; --chrome-line:#2a323c; --chrome-dim:#93a1b1;
+    --chrome-panel2:#1e242c; --chrome-txt:#e8edf3;
+    color-scheme:dark;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
-    margin:0; background:#0f1216;
+    margin:0; background:var(--chrome-bg);
     font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     padding-bottom:env(safe-area-inset-bottom);
   }
 
   .bar{
-    position:sticky; top:0; z-index:5; background:#0f1216;
-    border-bottom:1px solid #2a323c;
+    position:sticky; top:0; z-index:5; background:var(--chrome-bg);
+    border-bottom:1px solid var(--chrome-line);
     padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;
     display:flex; align-items:center; gap:10px;
   }
-  .bar a{color:#93a1b1;text-decoration:none;font-size:14px}
-  .bar .pr{margin-left:auto;background:#1e242c;border:1px solid #2a323c;color:#e8edf3;
+  .bar a{color:var(--chrome-dim);text-decoration:none;font-size:14px}
+  .bar .pr{margin-left:auto;background:var(--chrome-panel2);border:1px solid var(--chrome-line);color:var(--chrome-txt);
            border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+  .themebtn{
+    flex:0 0 auto;
+    width:28px;height:28px;border-radius:50%;
+    background:none;border:1.6px solid var(--chrome-dim);color:var(--chrome-dim);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .themebtn:active{background:rgba(128,128,128,.16)}
+  .themebtn svg{width:15px;height:15px}
+  .themebtn .ic-system{display:none} .themebtn .ic-light{display:none} .themebtn .ic-dark{display:none}
+  .themebtn[data-mode="system"] .ic-system{display:block}
+  .themebtn[data-mode="light"] .ic-light{display:block}
+  .themebtn[data-mode="dark"] .ic-dark{display:block}
 
   .sheet{
     background:#fff; color:var(--ink);
@@ -137,6 +177,11 @@
 <div class="bar">
   <a href="index.html">‹ Back</a>
   <button class="pr" onclick="window.print()">Print</button>
+  <button class="themebtn" id="themebtn" type="button" data-mode="system" aria-label="Appearance: System">
+    <svg class="ic-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>
+    <svg class="ic-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+    <svg class="ic-dark" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.5 14.5a8.5 8.5 0 0 1-11-11 8.5 8.5 0 1 0 11 11z"/></svg>
+  </button>
 </div>
 
 <div class="sheet">
@@ -257,5 +302,32 @@
 
 <div class="src">Reference copy of the station flow chart. PSTrax is the system of record.</div>
 
+<script>
+/* ---------- appearance toggle (same mechanism as index.html) ---------- */
+const THEME_KEY = 'pfd-theme';
+const themeBtn = document.getElementById('themebtn');
+const THEME_LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
+const THEME_COLORS = { light: '#f3f5f7', dark: '#0f1216' };
+function setTheme(mode){
+  if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  themeBtn.dataset.mode = mode;
+  themeBtn.setAttribute('aria-label', 'Appearance: ' + THEME_LABELS[mode]);
+  const resolved = mode === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : mode;
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[resolved]);
+  try { localStorage.setItem(THEME_KEY, mode); } catch(e){}
+}
+(function initTheme(){
+  let stored = 'system';
+  try { stored = localStorage.getItem(THEME_KEY) || 'system'; } catch(e){}
+  setTheme(stored);
+})();
+themeBtn.onclick = () => {
+  const order = ['system', 'light', 'dark'];
+  setTheme(order[(order.indexOf(themeBtn.dataset.mode) + 1) % order.length]);
+};
+</script>
 </body>
 </html>

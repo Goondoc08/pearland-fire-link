@@ -7,11 +7,42 @@
 <title>Mando Schedule</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icon-180.png">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('pfd-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
 <style>
+  /* Light default; dark lives in two guarded places kept in sync — see
+     index.html for the full explanation of the pattern (same one here). */
   :root{
+    --bg:#f3f5f7; --panel:#ffffff; --panel2:#eef1f4; --line:#dde2e8;
+    --txt:#161b22; --dim:#5b6673; --faint:#8892a0;
+    --a:#c62f26; --b:#1f66c4; --c:#298048; --amber:#ad7a12;
+    --tint-red-bg:#fbe4e2; --tint-red-txt:#a3312a;
+    --tint-amber-bg:#fbf0d9; --tint-amber-txt:#8a6110;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+      --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+      --a:#e0362c; --b:#2f7fe0; --c:#3aa85f; --amber:#e0a52c;
+      --tint-red-bg:#3a1512; --tint-red-txt:#ff8a80;
+      --tint-amber-bg:#3a2f12; --tint-amber-txt:#e0b64a;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
     --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
     --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
     --a:#e0362c; --b:#2f7fe0; --c:#3aa85f; --amber:#e0a52c;
+    --tint-red-bg:#3a1512; --tint-red-txt:#ff8a80;
+    --tint-amber-bg:#3a2f12; --tint-amber-txt:#e0b64a;
+    color-scheme:dark;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--txt);
@@ -24,6 +55,18 @@
   .bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
   .bar a{color:var(--dim);text-decoration:none;font-size:14px}
   .bar h1{font-size:16px;font-weight:700;margin:0}
+  .themebtn{
+    margin-left:auto;flex:0 0 auto;
+    width:28px;height:28px;border-radius:50%;
+    background:none;border:1.6px solid var(--faint);color:var(--dim);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .themebtn:active{background:rgba(128,128,128,.16)}
+  .themebtn svg{width:15px;height:15px}
+  .themebtn .ic-system{display:none} .themebtn .ic-light{display:none} .themebtn .ic-dark{display:none}
+  .themebtn[data-mode="system"] .ic-system{display:block}
+  .themebtn[data-mode="light"] .ic-light{display:block}
+  .themebtn[data-mode="dark"] .ic-dark{display:block}
 
   h2{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--faint);
      margin:24px 0 9px;font-weight:700}
@@ -44,7 +87,10 @@
   .nums button{background:var(--panel2);border:1px solid var(--line);color:var(--dim);
                border-radius:9px;padding:11px 0;font:700 15px inherit;cursor:pointer;
                font-family:inherit}
-  .nums button.on{background:var(--txt);border-color:var(--txt);color:#0f1216}
+  /* color:var(--bg), not a hardcoded dark hex — --txt/--bg invert together
+     between themes, so this stays readable (dark-on-light button becomes
+     light-on-dark) instead of going invisible in light mode. */
+  .nums button.on{background:var(--txt);border-color:var(--txt);color:var(--bg)}
 
   /* hero */
   .hero{margin-top:14px;border-left:4px solid var(--faint)}
@@ -57,8 +103,8 @@
   .pillrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
   .pill{font-size:11px;letter-spacing:.5px;text-transform:uppercase;font-weight:700;
         padding:3px 9px;border-radius:6px;background:var(--panel2);color:var(--dim)}
-  .pill.now{background:#3a1512;color:#ff8a80}
-  .pill.soon{background:#3a2f12;color:#e0b64a}
+  .pill.now{background:var(--tint-red-bg);color:var(--tint-red-txt)}
+  .pill.soon{background:var(--tint-amber-bg);color:var(--tint-amber-txt)}
 
   /* upcoming list */
   ul.up{list-style:none;margin:0;padding:0}
@@ -68,12 +114,12 @@
   ul.up .d1{font-size:15px;font-weight:650}
   ul.up .d2{font-size:12px;color:var(--dim);margin-top:1px}
   ul.up .away{font-size:12px;color:var(--faint);white-space:nowrap;font-weight:600}
-  ul.up li.next{background:#141a20;border-radius:10px;padding-left:11px;padding-right:11px}
-  ul.up li.next .d1{color:#fff}
+  ul.up li.next{background:var(--panel2);border-radius:10px;padding-left:11px;padding-right:11px}
+  ul.up li.next .d1{color:var(--txt)}
 
   .brk{display:flex;align-items:center;gap:10px;padding:9px 2px;color:var(--amber);
        font-size:12px;font-weight:700;letter-spacing:.4px}
-  .brk .ln{flex:1;height:1px;background:#3a3018}
+  .brk .ln{flex:1;height:1px;background:var(--line)}
 
   .note{font-size:12.5px;color:var(--dim);background:var(--panel);border:1px solid var(--line);
         border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.55}
@@ -96,6 +142,11 @@
 <div class="bar"><div class="bar-in">
   <a href="index.html">‹ Back</a>
   <h1>Mando Schedule</h1>
+  <button class="themebtn" id="themebtn" type="button" data-mode="system" aria-label="Appearance: System">
+    <svg class="ic-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>
+    <svg class="ic-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+    <svg class="ic-dark" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.5 14.5a8.5 8.5 0 0 1-11-11 8.5 8.5 0 1 0 11 11z"/></svg>
+  </button>
 </div></div>
 
 <div class="wrap">
@@ -144,6 +195,32 @@
 
 <script src="mando.js"></script>
 <script>
+/* ---------- appearance toggle (same mechanism as index.html) ---------- */
+const THEME_KEY = 'pfd-theme';
+const themeBtn = document.getElementById('themebtn');
+const THEME_LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
+const THEME_COLORS = { light: '#f3f5f7', dark: '#0f1216' };
+function setTheme(mode){
+  if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  themeBtn.dataset.mode = mode;
+  themeBtn.setAttribute('aria-label', 'Appearance: ' + THEME_LABELS[mode]);
+  const resolved = mode === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : mode;
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[resolved]);
+  try { localStorage.setItem(THEME_KEY, mode); } catch(e){}
+}
+(function initTheme(){
+  let stored = 'system';
+  try { stored = localStorage.getItem(THEME_KEY) || 'system'; } catch(e){}
+  setTheme(stored);
+})();
+themeBtn.onclick = () => {
+  const order = ['system', 'light', 'dark'];
+  setTheme(order[(order.indexOf(themeBtn.dataset.mode) + 1) % order.length]);
+};
+
 const KEY = 'pfd-mando-group';
 let sel = { shift:null, group:null };
 

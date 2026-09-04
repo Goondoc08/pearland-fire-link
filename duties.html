@@ -7,11 +7,39 @@
 <title>Station Duties</title>
 <link rel="icon" href="favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icon-180.png">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('pfd-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
 <style>
+  /* Light default; dark lives in two guarded places kept in sync — see
+     index.html for the full explanation of the pattern (same one here). */
   :root{
+    --bg:#f3f5f7; --panel:#ffffff; --panel2:#eef1f4; --line:#dde2e8;
+    --txt:#161b22; --dim:#5b6673; --faint:#8892a0;
+    --red:#c62f26; --amber:#ad7a12; --green:#298048;
+    --tint-amber-bg:#fbf0d9; --tint-amber-line:#e0c98a; --tint-amber-txt:#8a6110;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+      --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+      --red:#e0362c; --amber:#e0a52c; --green:#3aa85f;
+      --tint-amber-bg:#3a2f12; --tint-amber-line:#4a3d18; --tint-amber-txt:#e0b64a;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
     --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
     --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
     --red:#e0362c; --amber:#e0a52c; --green:#3aa85f;
+    --tint-amber-bg:#3a2f12; --tint-amber-line:#4a3d18; --tint-amber-txt:#e0b64a;
+    color-scheme:dark;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{margin:0;background:var(--bg);color:var(--txt);
@@ -24,6 +52,18 @@
   .bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
   .bar a{color:var(--dim);text-decoration:none;font-size:14px}
   .bar h1{font-size:16px;font-weight:700;margin:0}
+  .themebtn{
+    margin-left:auto;flex:0 0 auto;
+    width:28px;height:28px;border-radius:50%;
+    background:none;border:1.6px solid var(--faint);color:var(--dim);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .themebtn:active{background:rgba(128,128,128,.16)}
+  .themebtn svg{width:15px;height:15px}
+  .themebtn .ic-system{display:none} .themebtn .ic-light{display:none} .themebtn .ic-dark{display:none}
+  .themebtn[data-mode="system"] .ic-system{display:block}
+  .themebtn[data-mode="light"] .ic-light{display:block}
+  .themebtn[data-mode="dark"] .ic-dark{display:block}
 
   h2{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--faint);
      margin:24px 0 9px;font-weight:700}
@@ -37,9 +77,10 @@
   .today .sub{font-size:13px;color:var(--dim)}
   .today .det{font-size:14px;color:var(--txt);margin-top:9px;line-height:1.55}
 
-  .flag{display:flex;gap:9px;align-items:flex-start;background:#2c2410;border:1px solid #4a3d18;
-        border-radius:10px;padding:10px 12px;margin-top:11px;font-size:13.5px;color:#e5c375}
-  .flag b{color:#f0d798}
+  .flag{display:flex;gap:9px;align-items:flex-start;
+        border-radius:10px;padding:10px 12px;margin-top:11px;font-size:13.5px}
+  .flag.warn{background:var(--tint-amber-bg);border:1px solid var(--tint-amber-line);color:var(--tint-amber-txt)}
+  .flag.neutral{background:var(--panel2);border:1px solid var(--line);color:var(--txt)}
 
   /* checklists */
   ul.ck{list-style:none;margin:0;padding:0}
@@ -59,7 +100,7 @@
   .dayname{font-size:17px;font-weight:800;margin:0 0 2px}
   .daysub{font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--red);
           font-weight:700;margin-bottom:9px}
-  .daybody{font-size:14.5px;line-height:1.6;color:#dbe3ec}
+  .daybody{font-size:14.5px;line-height:1.6;color:var(--txt)}
 
   .note{font-size:13px;color:var(--dim);background:var(--panel);border:1px solid var(--line);
         border-radius:12px;padding:12px 14px;margin-top:12px;line-height:1.55}
@@ -82,6 +123,11 @@
 <div class="bar"><div class="bar-in">
   <a href="index.html">‹ Back</a>
   <h1>Station Duties</h1>
+  <button class="themebtn" id="themebtn" type="button" data-mode="system" aria-label="Appearance: System">
+    <svg class="ic-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>
+    <svg class="ic-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+    <svg class="ic-dark" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.5 14.5a8.5 8.5 0 0 1-11-11 8.5 8.5 0 1 0 11 11z"/></svg>
+  </button>
 </div></div>
 
 <div class="wrap">
@@ -135,6 +181,32 @@
 <script src="shift.js"></script>
 <script src="duties.js"></script>
 <script>
+/* ---------- appearance toggle (same mechanism as index.html) ---------- */
+const THEME_KEY = 'pfd-theme';
+const themeBtn = document.getElementById('themebtn');
+const THEME_LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
+const THEME_COLORS = { light: '#f3f5f7', dark: '#0f1216' };
+function setTheme(mode){
+  if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  themeBtn.dataset.mode = mode;
+  themeBtn.setAttribute('aria-label', 'Appearance: ' + THEME_LABELS[mode]);
+  const resolved = mode === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : mode;
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[resolved]);
+  try { localStorage.setItem(THEME_KEY, mode); } catch(e){}
+}
+(function initTheme(){
+  let stored = 'system';
+  try { stored = localStorage.getItem(THEME_KEY) || 'system'; } catch(e){}
+  setTheme(stored);
+})();
+themeBtn.onclick = () => {
+  const order = ['system', 'light', 'dark'];
+  setTheme(order[(order.indexOf(themeBtn.dataset.mode) + 1) % order.length]);
+};
+
 const DOW  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const ABBR = ['S','M','T','W','T','F','S'];
 
@@ -153,13 +225,13 @@ document.getElementById('t-detail').innerHTML =
 /* Wednesday cycle count only lands when Wednesday is day 1 of the tour. */
 const flag = document.getElementById('t-flag');
 if (todayIx === 3 && sh.dayOf === 1){
-  flag.innerHTML = '<div class="flag"><span>▲</span><span><b>Cycle count today.</b> '
+  flag.innerHTML = '<div class="flag warn"><span>▲</span><span><b>Cycle count today.</b> '
     + 'Wednesday landed on day 1 of the tour — EMS and station supplies must be counted '
     + 'and documented.</span></div>';
 }
 if (sh.dayOf === 1){
   flag.insertAdjacentHTML('beforeend',
-    '<div class="flag"><span>▲</span><span><b>Day 1 of the tour.</b> '
+    '<div class="flag warn"><span>▲</span><span><b>Day 1 of the tour.</b> '
     + 'All apparatus in the station must be checked for readiness and documented.</span></div>');
 }
 
@@ -182,7 +254,7 @@ function show(ix){
   document.getElementById('d-title').textContent = d.title;
   document.getElementById('d-body').textContent  = d.body;
   document.getElementById('d-extra').innerHTML = d.extra
-    ? `<div class="flag" style="background:#151a20;border-color:#2a323c;color:#c3ccd6">
+    ? `<div class="flag neutral">
          <span>▲</span><span><b>${d.extra.head}</b><br>${d.extra.text}</span></div>`
     : '';
 }
