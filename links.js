@@ -98,6 +98,14 @@ const LINKS = [
         pinned: true
       },
       {
+        // A direct link to scheduling.esosuite.net (its own subdomain,
+        // separate login from the main app below) was tried and dropped —
+        // that login didn't reliably accept credentials that work fine on
+        // the main site (likely tied to how tightly this system is locked
+        // down for HIPAA-protected reports). A link people can't count on
+        // is worse than the extra clicks through the main app they're
+        // already used to. If ESO ever exposes a real SSO'd deep link,
+        // revisit.
         name: "ESO Suite",
         desc: "ePCR & reporting",
         url: "https://www.esosuite.net/login/PEARLANDFD",
