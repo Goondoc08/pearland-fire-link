@@ -169,6 +169,11 @@ const LINKS = [
     icon: "book",
     items: [
       {
+        name: "Unit Phones",
+        desc: "Battalion, heavy apparatus and medic unit phones",
+        url: "unit-phones.html"
+      },
+      {
         name: "Engine Manual",
         desc: "Engine Company Operations Manual, 2nd ed.",
         url: "engine-manual.pdf"
@@ -349,11 +354,6 @@ const LINKS = [
         name: "Contacts<br>Fire & City",
         desc: "Non-emergency, Fire Marshal, PIO, City Hall, stations",
         url: "contacts.html"
-      },
-      {
-        name: "Unit Phones",
-        desc: "Battalion, heavy apparatus and medic unit phones",
-        url: "unit-phones.html"
       },
       {
         name: "Station Duties",
