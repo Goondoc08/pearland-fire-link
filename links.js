@@ -351,6 +351,11 @@ const LINKS = [
         url: "contacts.html"
       },
       {
+        name: "Unit Phones",
+        desc: "Battalion, heavy apparatus and medic unit phones",
+        url: "unit-phones.html"
+      },
+      {
         name: "Station Duties",
         desc: "Tour tasks and the weekly rotation",
         url: "duties.html",

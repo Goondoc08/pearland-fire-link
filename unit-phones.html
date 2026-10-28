@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1216">
+<title>Unit Phones</title>
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icon-180.png">
+<script>
+  (function(){
+    try{
+      var t = localStorage.getItem('pfd-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
+<style>
+  /* Same tokens and row styling as contacts.html — keep the two in sync. */
+  :root{
+    --bg:#f3f5f7; --panel:#ffffff; --panel2:#eef1f4; --line:#dde2e8;
+    --txt:#161b22; --dim:#5b6673; --faint:#8892a0;
+    --red:#c62f26; --amber:#ad7a12; --green:#298048; --blue:#1f66c4;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+      --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+      --red:#e0362c; --amber:#e0a52c; --green:#3aa85f; --blue:#2f7fe0;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0f1216; --panel:#171b21; --panel2:#1e242c; --line:#2a323c;
+    --txt:#e8edf3; --dim:#93a1b1; --faint:#5d6b7a;
+    --red:#e0362c; --amber:#e0a52c; --green:#3aa85f; --blue:#2f7fe0;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--txt);
+       font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       padding-bottom:calc(env(safe-area-inset-bottom) + 40px)}
+  .wrap{max-width:760px;margin:0 auto;padding:0 14px}
+
+  .bar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);
+       padding:calc(env(safe-area-inset-top) + 10px) 14px 10px}
+  .bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .bar a{color:var(--dim);text-decoration:none;font-size:14px}
+  .bar h1{font-size:16px;font-weight:700;margin:0}
+  .themebtn{
+    margin-left:auto;flex:0 0 auto;
+    width:28px;height:28px;border-radius:50%;
+    background:none;border:1.6px solid var(--faint);color:var(--dim);
+    cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+  }
+  .themebtn:active{background:rgba(128,128,128,.16)}
+  .themebtn svg{width:15px;height:15px}
+  .themebtn .ic-system{display:none} .themebtn .ic-light{display:none} .themebtn .ic-dark{display:none}
+  .themebtn[data-mode="system"] .ic-system{display:block}
+  .themebtn[data-mode="light"] .ic-light{display:block}
+  .themebtn[data-mode="dark"] .ic-dark{display:block}
+
+  h2{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--faint);
+     margin:24px 0 9px;font-weight:700}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px 14px}
+
+  /* call-in reminder */
+  .remind{margin-top:16px;font-size:13.5px;color:var(--dim);background:var(--panel);
+          border:1px solid var(--line);border-left:4px solid var(--amber);
+          border-radius:12px;padding:11px 14px;line-height:1.5}
+  .remind b{color:var(--txt)}
+
+  /* ---------- contact rows (from contacts.html) ---------- */
+  .row{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .info{flex:1;min-width:0}
+  .row .nm{font-size:14.5px;font-weight:700;color:var(--txt)}
+  .row .sub{font-size:12.5px;color:var(--dim);margin-top:1px;line-height:1.4}
+  .row .dial{
+    flex:0 0 auto;display:flex;align-items:center;gap:7px;
+    background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    padding:8px 13px;color:var(--txt);text-decoration:none;font-size:14px;
+    font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;
+  }
+  .row .dial:active{background:var(--line)}
+  .row .dial svg{width:14px;height:14px;color:var(--green);flex:0 0 auto}
+  .row .soon{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--faint);
+             border:1px dashed var(--line);border-radius:9px;padding:8px 13px}
+  .row.off .nm{color:var(--faint)}
+
+  /* unit badge — colour comes from the group (red heavy / blue medic) */
+  .badge{flex:0 0 auto;width:120px;text-align:center;font-size:14px;font-weight:800;
+         border-radius:8px;padding:6px 8px;color:#fff;background:var(--c);white-space:nowrap}
+  .row .dial,.row .soon{margin-left:auto}
+  .row.off .badge{opacity:.55}
+  .heavy{--c:var(--red)} .medic{--c:var(--blue)} .bc{--c:var(--amber)}
+
+  /* Heavy / Medic switcher */
+  .seg{display:flex;gap:6px;background:var(--panel2);border:1px solid var(--line);
+       border-radius:12px;padding:4px;margin:20px 0 10px}
+  .seg button{flex:1;border:0;border-radius:9px;padding:9px 0;font:inherit;font-size:14px;
+              font-weight:700;color:var(--dim);background:none;cursor:pointer}
+  .seg button[aria-selected="true"]{background:var(--c);color:#fff}
+  #list.heavy .card{border-top:3px solid var(--red)}
+  #list.medic .card{border-top:3px solid var(--blue)}
+
+  footer{margin-top:30px;font-size:11.5px;color:var(--faint);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+
+<div class="bar"><div class="bar-in">
+  <a href="index.html">‹ Back</a>
+  <h1>Unit Phones</h1>
+  <button class="themebtn" id="themebtn" type="button" data-mode="system" aria-label="Appearance: System">
+    <svg class="ic-system" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"/></svg>
+    <svg class="ic-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8l1.8-1.8M18 6l1.8-1.8"/></svg>
+    <svg class="ic-dark" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.5 14.5a8.5 8.5 0 0 1-11-11 8.5 8.5 0 1 0 11 11z"/></svg>
+  </button>
+</div></div>
+
+<div class="wrap">
+
+  <div class="remind">
+    <b>Calling in sick?</b> Call by 23:00, or 05:00–06:00 Day of Tour. (Evening 12s: before 17:00).
+  </div>
+
+  <h2>Battalion</h2>
+  <div class="card" id="bc"></div>
+
+  <div class="seg" role="tablist">
+    <button class="heavy" role="tab" data-g="heavy" aria-selected="true">Heavy Apparatus</button>
+    <button class="medic" role="tab" data-g="medic" aria-selected="false">Medic Units</button>
+  </div>
+  <div id="list" class="heavy"><div class="card" id="rows"></div></div>
+
+  <footer>Officers carry the unit phone at all times.</footer>
+</div>
+
+<script>
+/* Numbers are 10 digits, no formatting. Heavy and medic lists are in
+   station order; Squad 1 leads the medic list by request. */
+const BATTALION = [
+  { id: 'BC1', name: 'Battalion 1', num: '8329201493' },
+  { id: 'BC2', name: 'Battalion 2', num: null }
+];
+const UNITS = {
+  heavy: [
+    { id: 'L1',  name: 'Ladder 1', num: '7135424311' },
+    { id: 'E2',  name: 'Engine 2', num: '8329204004' },
+    { id: 'E3',  name: 'Engine 3', num: '2815076176' },
+    { id: 'L4',  name: 'Ladder 4', num: '2819242101' },
+    { id: 'E8',  name: 'Engine 8', num: '2815200841' },
+    { id: 'T8',  name: 'Tower 8',  num: '2815201821' }
+  ],
+  medic: [
+    { id: 'SQ1', name: 'Squad 1',  num: '8324737054' },
+    { id: 'M1',  name: 'Medic 1',  num: '8324737045' },
+    { id: 'M2',  name: 'Medic 2',  num: '8324737047' },
+    { id: 'M3',  name: 'Medic 3',  num: '8324737048' },
+    { id: 'M4',  name: 'Medic 4',  num: '8324737046' },
+    { id: 'M5',  name: 'Medic 5',  num: '2816425375' },
+    { id: 'M8',  name: 'Medic 8',  num: '2813812706' }
+  ]
+};
+const PHONE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .6 2.9a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.9.5 2.9.6a2 2 0 0 1 1.8 2.1z"/></svg>';
+
+function row(u, cls){
+  const dial = u.num
+    ? `<a class="dial" href="tel:+1${u.num}">${PHONE_SVG}${u.num.slice(0,3)}.${u.num.slice(3,6)}.${u.num.slice(6)}</a>`
+    : '<span class="soon">Coming 2027</span>';
+  return `<div class="row${u.num ? '' : ' off'}">
+    <span class="badge ${cls}">${u.name}</span>
+    ${dial}</div>`;
+}
+
+document.getElementById('bc').innerHTML = BATTALION.map(u => row(u, 'bc')).join('');
+
+const list = document.getElementById('list');
+const tabs = document.querySelectorAll('.seg button');
+function show(g){
+  list.className = g;
+  document.getElementById('rows').innerHTML = UNITS[g].map(u => row(u, g)).join('');
+  tabs.forEach(b => b.setAttribute('aria-selected', b.dataset.g === g));
+}
+tabs.forEach(b => b.onclick = () => show(b.dataset.g));
+show('heavy');
+
+/* ---------- appearance toggle (same mechanism as index.html) ---------- */
+const THEME_KEY = 'pfd-theme';
+const themeBtn = document.getElementById('themebtn');
+const THEME_LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
+const THEME_COLORS = { light: '#f3f5f7', dark: '#0f1216' };
+function setTheme(mode){
+  if (mode === 'system') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', mode);
+  themeBtn.dataset.mode = mode;
+  themeBtn.setAttribute('aria-label', 'Appearance: ' + THEME_LABELS[mode]);
+  const resolved = mode === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : mode;
+  document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[resolved]);
+  try { localStorage.setItem(THEME_KEY, mode); } catch(e){}
+}
+(function initTheme(){
+  let stored = 'system';
+  try { stored = localStorage.getItem(THEME_KEY) || 'system'; } catch(e){}
+  setTheme(stored);
+})();
+themeBtn.onclick = () => {
+  const order = ['system', 'light', 'dark'];
+  setTheme(order[(order.indexOf(themeBtn.dataset.mode) + 1) % order.length]);
+};
+</script>
+</body>
+</html>
